@@ -3,7 +3,7 @@ const cors = require('cors');
 const routes = require('./routes'); // Import file routes
 const connectDB = require('./config/db');
 const { swaggerDocs, swaggerUi } = require('./config/swagger');
-require('dotenv').config({ path: 'environments.env' });
+require('dotenv').config({ path: '.env.development' });
 
 // Kết nối DB
 connectDB();
