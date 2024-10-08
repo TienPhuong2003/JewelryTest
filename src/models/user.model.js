@@ -29,9 +29,15 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   role: {
-    type: String, // Lưu trữ vai trò dưới dạng mảng chuỗi
+    type: String,
     default: 'user', // Vai trò mặc định là 'user'
     enum: ['user', 'admin'], // Danh sách các vai trò hợp lệ
+  },
+  otp: {
+    type: String, // Lưu mã OTP
+  },
+  otpExpires: {
+    type: Date, // Lưu thời gian hết hạn OTP
   },
   userProfile: {
     type: mongoose.Schema.Types.ObjectId,

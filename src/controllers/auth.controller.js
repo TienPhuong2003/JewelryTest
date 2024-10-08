@@ -12,12 +12,17 @@ const register = async (req, res) => {
 };
 // Controller xác thực OTP
 const verifyOTP = async (req, res) => {
-  const { email, otp } = req.body; // Sửa lại để nhận email
+  
+  const { q } = req.query; // JWT từ query
+  console.log(q)
+  const { email, otp } = req.body; // Email và OTP từ body
+
   try {
-    const result = await authService.verifyOTP(email, otp); // Sửa lại để truyền email
-    res.status(200).json(result); // Gửi phản hồi nếu xác thực thành công
+    // Gọi hàm verifyOTP trong controller và truyền vào các tham số
+    const result = await authService.verifyOTP(q, email, otp);
+    res.status(200).json(result); // Trả về thông báo thành công nếu OTP đúng
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message }); // Trả về lỗi nếu OTP không đúng
   }
 };
 // Đăng nhập
@@ -62,6 +67,30 @@ const refreshAccessToken = async (req, res) => {
   }
 };
 
+// Gửi OTP qua email
+const sendOTP = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const message = await authService.sendOTP(email);
+    return res.status(200).json({ message });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+// Xác nhận OTP và đặt lại mật khẩu
+const confirmOTPAndResetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body; // Lấy email, OTP và mật khẩu mới từ body
+
+  try {
+    const message = await authService.confirmOTPAndResetPassword(email, otp, newPassword);
+    return res.status(200).json({ message });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+
+
 // Export các controller
-module.exports = { login, register, verifyOTP, refreshAccessToken };
+module.exports = { login, register, verifyOTP, refreshAccessToken, sendOTP, confirmOTPAndResetPassword };
 
