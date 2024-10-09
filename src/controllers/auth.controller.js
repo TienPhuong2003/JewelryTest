@@ -12,14 +12,12 @@ const register = async (req, res) => {
 };
 // Controller xác thực OTP
 const verifyOTP = async (req, res) => {
-  
-  const { q } = req.query; // JWT từ query
-  console.log(q)
-  const { email, otp } = req.body; // Email và OTP từ body
 
+  const { q } = req.query; // JWT từ query
+  const {otp } = req.body; // Email và OTP từ body
   try {
     // Gọi hàm verifyOTP trong controller và truyền vào các tham số
-    const result = await authService.verifyOTP(q, email, otp);
+    const result = await authService.verifyOTP(q, otp);
     res.status(200).json(result); // Trả về thông báo thành công nếu OTP đúng
   } catch (error) {
     res.status(400).json({ error: error.message }); // Trả về lỗi nếu OTP không đúng
@@ -28,12 +26,20 @@ const verifyOTP = async (req, res) => {
 // Đăng nhập
 const login = async (req, res) => {
   const { email, password } = req.body;
-
   try {
+    // Gọi dịch vụ đăng nhập
     const result = await authService.loginUser(email, password);
-    res.status(200).json(result); // Gửi phản hồi với token nếu đăng nhập thành công
+    
+    if (result.accessToken) {
+      // Nếu có accessToken, có nghĩa là đăng nhập thành công
+      return res.status(200).json(result); // Gửi phản hồi với token
+    } else if (result.verifyUrl) {
+      // Nếu chưa xác thực và cần OTP
+      return res.status(200).json(result); // Gửi phản hồi với URL xác thực OTP
+    }
+
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    return res.status(401).json({ error: error.message });
   }
 };
 
@@ -79,10 +85,12 @@ const sendOTP = async (req, res) => {
 };
 // Xác nhận OTP và đặt lại mật khẩu
 const confirmOTPAndResetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body; // Lấy email, OTP và mật khẩu mới từ body
-
+  const {q} = req.query
+  const { otp, newPassword , confirmPassword} = req.body; // Lấy email, OTP và mật khẩu mới từ body
+  console.log(req.body)
+  console.log("confirmPassWord",confirmPassword)
   try {
-    const message = await authService.confirmOTPAndResetPassword(email, otp, newPassword);
+    const message = await authService.confirmOTPAndResetPassword(q, otp, newPassword,confirmPassword);
     return res.status(200).json({ message });
   } catch (error) {
     return res.status(400).json({ message: error.message });

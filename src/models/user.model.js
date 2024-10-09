@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserProfile = require('./profile.model');
+const Profile = require('./profile.model');
 
 // Định nghĩa mô hình User
 const userSchema = new mongoose.Schema({
@@ -36,12 +36,9 @@ const userSchema = new mongoose.Schema({
   otp: {
     type: String, // Lưu mã OTP
   },
-  otpExpires: {
-    type: Date, // Lưu thời gian hết hạn OTP
-  },
   userProfile: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'UserProfile',
+    ref: 'Profile',
   },
 }, { timestamps: true });
 

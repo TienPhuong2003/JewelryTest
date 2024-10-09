@@ -4,8 +4,8 @@ const User = require('../models/user.model'); // Đường dẫn tới model Use
 
 // Tạo middleware để chạy cron job
 const cronMiddleware = () => {
-  // Chạy cron job mỗi phút để kiểm tra người dùng chưa xác thực
-  cron.schedule('* * * * *', async () => {
+  // Chạy cron job 10 ngày để kiểm tra người dùng chưa xác thực
+  cron.schedule('0 0 */10 * *', async () => {
     const expiredUsers = await User.find({
       verified: false,
       otpExpires: { $lt: Date.now() }, // Tìm người dùng có otpExpires nhỏ hơn hiện tại (đã hết hạn)

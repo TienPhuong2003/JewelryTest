@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model.js');
+const UserProfile = require('../models/profile.model.js');
 const otpGenerator = require('otp-generator'); // Thêm dòng này để yêu cầu module otp-generator
 const { sendOTPVerificationEmail } = require('../mailler/mailOtp.js');
 const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../environments/index.js');
 
 const registerUser = async ({ firstName, lastName, email, phoneNumber, password }) => {
   // Kiểm tra xem email đã tồn tại chưa
@@ -24,14 +26,20 @@ const registerUser = async ({ firstName, lastName, email, phoneNumber, password 
     verified: false,
     role: 'user',
     otp,  // Lưu OTP vào User model
-    otpExpires: Date.now() + 5 * 60 * 1000 // OTP có thời hạn 5 phút
   });
+
+    const newProfileUser = new UserProfile({
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+    })
 
   // Tạo JWT chứa email, hết hạn sau 5 phút
   const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '5m' });
   // Tạo URL xác thực OTP
-  const verifyUrl = `https://yourdomain.com/verify-email?q=${token}&email=${email}`;
-
+  const verifyUrl = `https://yourdomain.com/verify-email?q=${token}`;
+  await newProfileUser.save();
   await newUser.save(); // Lưu vào database
   // Gửi email OTP đến người dùng
   await sendOTPVerificationEmail(email, otp);
@@ -44,8 +52,7 @@ const registerUser = async ({ firstName, lastName, email, phoneNumber, password 
 };
 
 // Xác thực OTP và lưu vào database
-const verifyOTP = async (q, email, otp) => {
-  console.log(q)
+const verifyOTP = async (q, otp) => {
   // Giải mã JWT từ tham số 'q'
   let decoded;
   try {
@@ -53,24 +60,12 @@ const verifyOTP = async (q, email, otp) => {
   } catch (error) {
     throw new Error('Token không hợp lệ hoặc đã hết hạn');
   }
-
-  // Kiểm tra email từ JWT có khớp với email trong request không
-  if (decoded.email !== email) {
-    throw new Error('Email không khớp với token');
-  }
-
+  console.log(decoded)
   // Tìm người dùng theo email
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: decoded.email });
   if (!user) {
     throw new Error('Người dùng không tồn tại');
   }
-
-  // Kiểm tra thời gian hết hạn của OTP
-  if (user.otpExpires < Date.now()) {
-    await User.deleteOne({ email }); // Xóa khỏi database nếu OTP đã hết hạn
-    throw new Error('OTP đã hết hạn.');
-  }
-
   // So sánh OTP người dùng nhập vào với OTP đã lưu trong database
   if (user.otp !== otp) {
     throw new Error('OTP không đúng');
@@ -79,54 +74,67 @@ const verifyOTP = async (q, email, otp) => {
   // Nếu OTP hợp lệ, cập nhật trạng thái xác minh và xóa OTP
   user.verified = true;
   user.otp = undefined; // Xóa OTP sau khi xác thực
-  user.otpExpires = undefined; // Xóa thời gian hết hạn
   await user.save();
 
   return { message: 'Tài khoản đã được xác nhận thành công' };
 };
 
-// login
+// login  check verify
 const loginUser = async (email, password) => {
+
   // Tìm người dùng bằng email
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error('Email không tồn tại');
   }
+  if (user.verified == true) {
+    // So sánh mật khẩu
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error('Sai mật khẩu');
+    }
 
-  // So sánh mật khẩu
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new Error('Sai mật khẩu');
+    // Tạo Access Token (thời hạn ngắn)
+    const accessToken = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET, // Secret key để mã hóa Access Token
+      { expiresIn: '1h' } // Thời gian hết hạn của Access Token
+    );
+
+    // Tạo Refresh Token (thời hạn dài hơn)
+    const refreshToken = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_REFRESH_SECRET, // Secret key khác để mã hóa Refresh Token
+      { expiresIn: '7d' } // Thời gian hết hạn của Refresh Token (ví dụ: 7 ngày)
+    );
+
+    // Trả về cả Access Token và Refresh Token
+    return {
+      message: 'Đăng nhập thành công',
+      accessToken,
+      refreshToken
+    };
+  }
+  else{
+    const otp = otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '5m' });
+    // Tạo URL xác thực OTP
+    const verifyUrl = `https://yourdomain.com/verify-email?q=${token}`;
+    user.otp = otp
+    await user.save();
+    await sendOTPVerificationEmail(email, otp);
+    return {
+      message: ' Tài khoản của bạn chưa được xác thực ,OTP đã được gửi, vui lòng kiểm tra email',
+      verifyUrl
+    };
   }
 
-  // Tạo Access Token (thời hạn ngắn)
-  const accessToken = jwt.sign(
-    { userId: user._id, role: user.role },
-    process.env.JWT_SECRET, // Secret key để mã hóa Access Token
-    { expiresIn: '1h' } // Thời gian hết hạn của Access Token
-  );
-
-  // Tạo Refresh Token (thời hạn dài hơn)
-  const refreshToken = jwt.sign(
-    { userId: user._id, role: user.role },
-    process.env.JWT_REFRESH_SECRET, // Secret key khác để mã hóa Refresh Token
-    { expiresIn: '7d' } // Thời gian hết hạn của Refresh Token (ví dụ: 7 ngày)
-  );
-
-  // Trả về cả Access Token và Refresh Token
-  return {
-    message: 'Đăng nhập thành công',
-    accessToken,
-    refreshToken
-  };
 };
 
 // Yêu cầu đặt lại mật khẩu
 const sendOTP = async (email) => {
-  
   // Kiểm tra xem email có tồn tại không
   const user = await User.findOne({ email });
-  console.log(user)
   if (!user) {
     throw new Error('Email không tồn tại');
   }
@@ -141,16 +149,37 @@ const sendOTP = async (email) => {
   user.otp = otp;
   user.otpExpires = otpExpires;
 
+  // Tạo JWT chứa email
+  const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '10m' });
+
+  // Tạo URL xác thực OTP (URL chứa JWT)
+  const verifyUrl = `https://yourdomain.com/verify-email?q=${token}`;
+
   // Gửi email OTP đến người dùng
   await sendOTPVerificationEmail(email, otp);
+
+  // Lưu người dùng với OTP mới
   await user.save();
-  return 'OTP đã được gửi qua email';
+
+  // Trả về URL chứa token
+  return verifyUrl;
 };
 
 // Xác nhận OTP và đặt lại mật khẩu
-const confirmOTPAndResetPassword = async (email, otp, newPassword) => {
+const confirmOTPAndResetPassword = async (q, otp, newPassword, confirmPassword) => {
+
+  let decodedEmail;
+  try {
+
+    decodedEmail = jwt.verify(q, process.env.JWT_SECRET); // JWT_SECRET là khóa bí mật
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      throw new Error("Token đã hết hạn");
+    }
+    throw new Error('Token không hợp lệ');
+  }
   // Lấy dữ liệu người dùng
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: decodedEmail.email });
   if (!user) {
     throw new Error('Email không tồn tại');
   }
@@ -165,19 +194,26 @@ const confirmOTPAndResetPassword = async (email, otp, newPassword) => {
     throw new Error('OTP không chính xác');
   }
 
+  // So sánh 2 mật khẩu
+  if (newPassword !== confirmPassword) {
+    console.log(newPassword)
+    console.log(confirmPassword)
+    throw new Error('2 mật khẩu không trùng khớp');
+  }
   // Mã hóa mật khẩu mới
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
   // Cập nhật mật khẩu người dùng trong database
- 
   await User.updateOne(
-    { email },
+    { email: decodedEmail.email },
     {
       password: hashedPassword, // Cập nhật mật khẩu mới
       $unset: { otp: "", otpExpires: "" } // Xóa hẳn trường OTP và thời gian hết hạn
     }
   );
+
   return 'Đặt lại mật khẩu thành công';
 };
+
 
 module.exports = { registerUser, verifyOTP, loginUser, sendOTP, confirmOTPAndResetPassword };

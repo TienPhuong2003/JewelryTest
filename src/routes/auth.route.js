@@ -4,8 +4,16 @@ const authController = require('../controllers/auth.controller');
 
 /**
  * @swagger
+ * tags:
+ *   - name: Auth
+ *     description: Các endpoint liên quan đến Login , register
+ */
+
+/**
+ * @swagger
  * /auth/register:
  *   post:
+ *     tags: [Auth]
  *     summary: Đăng ký tài khoản
  *     requestBody:
  *       required: true
@@ -38,6 +46,7 @@ router.post('/register', authController.register); // Đăng ký tài khoản v�
  * @swagger
  * /auth/verify-otp:
  *   post:
+ *     tags: [Auth]
  *     summary: Xác thực OTP khi đăng ký
  *     parameters:
  *       - in: query
@@ -53,8 +62,6 @@ router.post('/register', authController.register); // Đăng ký tài khoản v�
  *           schema:
  *             type: object
  *             properties:
- *               email:
- *                 type: string
  *               otp:
  *                 type: string
  *     responses:
@@ -69,6 +76,7 @@ router.post('/verify-otp', authController.verifyOTP); // Xác thực OTP
  * @swagger
  * /auth/login:
  *   post:
+ *     tags: [Auth]
  *     summary: Đăng nhập tài khoản
  *     requestBody:
  *       required: true
@@ -96,6 +104,7 @@ router.post('/login', authController.login); // Đăng nhập tài khoản
  * @swagger
  * /auth/send-otp:
  *   post:
+ *     tags: [Auth]
  *     summary: Gửi OTP đến email để đặt lại mật khẩu
  *     requestBody:
  *       required: true
@@ -120,7 +129,15 @@ router.post('/send-otp', authController.sendOTP); // Yêu cầu đặt lại m�
  * @swagger
  * /auth/reset-password:
  *   post:
+ *     tags: [Auth]
  *     summary: Xác nhận OTP và đặt lại mật khẩu
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         description: JWT chứa thông tin email
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -128,21 +145,22 @@ router.post('/send-otp', authController.sendOTP); // Yêu cầu đặt lại m�
  *           schema:
  *             type: object
  *             properties:
- *               email:
- *                 type: string
- *                 description: "Địa chỉ email của người dùng"
  *               otp:
  *                 type: string
  *                 description: "OTP được gửi đến email"
  *               newPassword:
  *                 type: string
  *                 description: "Mật khẩu mới mà người dùng muốn đặt"
+ *               confirmPassword:
+ *                 type: string
+ *                 description: "Xác nhận lại mật khẩu"
  *     responses:
  *       200:
  *         description: "Đặt lại mật khẩu thành công"
  *       400:
- *         description: "Lỗi khi xác nhận đặt lại mật khẩu; ví dụ: OTP không chính xác hoặc đã hết hạn"
+ *         description: "Lỗi khi xác nhận đặt lại mật khẩu; ví dụ: OTP không chính xác, mật khẩu không trùng khớp hoặc đã hết hạn"
  */
+
 router.post('/reset-password', authController.confirmOTPAndResetPassword); // Xác nhận đặt lại mật khẩu
 
 
