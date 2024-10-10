@@ -30,16 +30,11 @@ export const login = async (email, password) => {
     }
   };
 
-export const profile = async (firstName, lastName, email, phoneNumber, addresses) => {
+export const profile = async (email) => {
   try {
-    // const response = await axiosClient.get(`/users/profiles/${firstName}`, {
-    const response = await axiosClient.get(`/users/profiles/${firstName}`, {
+    const response = await axiosClient.get(`/users/profiles/${email}`, {
       params: {
-        firstName,
-        lastName,
         email,
-        phoneNumber,
-        addresses,
       },
     });
     return response.data;
