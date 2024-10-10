@@ -29,6 +29,7 @@ import { Wrapper as PopperWrapper } from '../../../Popper';
 import AccountItem from '../../../AccountItem';
 import Menu from '../../../Popper/Menu';
 import 'tippy.js/dist/tippy.css';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 const MENU_ITEMS = [
@@ -70,7 +71,7 @@ function Header() {
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.logo}>
+            <Link to='/' className={styles.logo}>
                 <img 
                     width="230" 
                     height="50" 
@@ -80,7 +81,7 @@ function Header() {
                     className="lazyload loaded" 
                     data-was-processed="true"
                 />
-            </div>
+            </Link>
     
             <div className={styles.center}>
                 <div className={styles.search}>
@@ -351,14 +352,14 @@ function Header() {
             </div>
     
             <div className={styles.right}>
-                <div className={styles.account}>
+                <Link to='/login' className={styles.account}>
                     <div className={styles.circle}>
                         <FontAwesomeIcon className={styles.iconUser} icon={faUserAlt} />
                     </div>
                     <div className={styles.taikhoan}>
                         Tài khoản
                     </div>
-                </div>
+                </Link>
 
                 <div className={styles.box}>
                     <div className={styles.circle}>
