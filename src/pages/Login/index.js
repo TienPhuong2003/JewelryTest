@@ -10,7 +10,7 @@
 // import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // import { fetchAllUser, login, profile } from '../../services/api/api';
 
-// function Following() {
+// function Login() {
 //   const [email, setEmail] = useState('');
 //   const [password, setPassword] = useState('');
 //   const [error, setError] = useState(null);
@@ -94,7 +94,7 @@
 //   );
 // }
 
-// export default Following;
+// export default Login;
 
 
 import React, { useEffect, useState } from 'react';
@@ -109,7 +109,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { fetchAllUser, login, profile } from '../../services/api/api';
 
-function Following() {
+function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -126,6 +126,7 @@ function Following() {
     } catch (error) {
       setError('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.');
     }
+    
   };
 
   useEffect(() => {
@@ -211,4 +212,4 @@ function Following() {
   );
 }
 
-export default Following;
+export default Login;
