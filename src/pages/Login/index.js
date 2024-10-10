@@ -1,132 +1,26 @@
-// import React, { useEffect, useState } from 'react';
-// import {
-//   MDBContainer,
-//   MDBInput,
-//   MDBCheckbox,
-//   MDBBtn,
-//   MDBIcon
-// } from 'mdb-react-ui-kit';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-// import { fetchAllUser, login, profile } from '../../services/api/api';
-
-// function Login() {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [error, setError] = useState(null);
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const data = await login(email, password);
-//       console.log('Đăng nhập thành công:', data);
-//     } catch (error) {
-//       setError('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.');
-//     }
-//   };
-
-//   const [listUsers, setListUsers] = useState([]);
-
-//     useEffect(() => {
-
-//         getUsers();
-//     }, [])
-
-//     const getUsers = async () => {
-//         let res = await profile(email);
-//         console.log("check", res);
-//     }
-
-
-//   return (
-//     <MDBContainer className="p-3 my-5 d-flex flex-column w-50">
-//       <form onSubmit={handleSubmit}>
-//         <MDBInput 
-//           wrapperClass='mb-4' 
-//           label='Email address' 
-//           id='form1' 
-//           type='email' 
-//           value={email}
-//           onChange={(e) => setEmail(e.target.value)}
-//         />
-//         <MDBInput 
-//           wrapperClass='mb-4' 
-//           label='Password' 
-//           id='form2' 
-//           type='password' 
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//         />
-
-//         <div className="d-flex justify-content-between mx-3 mb-4">
-//           <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
-//           <a href="#!">Forgot password?</a>
-//         </div>
-
-//         {error && <p style={{ color: 'red' }}>{error}</p>}
-
-//         <MDBBtn className="mb-4" type="submit">Sign in</MDBBtn>
-//       </form>
-
-//       <div className="text-center">
-//         <p>Not a member? <a href="#!">Register</a></p>
-//         <p>or sign up with:</p>
-
-//         <div className='d-flex justify-content-between mx-auto' style={{ width: '40%' }}>
-//           <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-//             <MDBIcon fab icon='facebook-f' size="sm" />
-//           </MDBBtn>
-
-//           <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-//             <MDBIcon fab icon='twitter' size="sm" />
-//           </MDBBtn>
-
-//           <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-//             <MDBIcon fab icon='google' size="sm" />
-//           </MDBBtn>
-
-//           <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-//             <MDBIcon fab icon='github' size="sm" />
-//           </MDBBtn>
-//         </div>
-//       </div>
-//     </MDBContainer>
-//   );
-// }
-
-// export default Login;
-
-
 import React, { useEffect, useState } from 'react';
-import {
-  MDBContainer,
-  MDBInput,
-  MDBCheckbox,
-  MDBBtn,
-  MDBIcon
-} from 'mdb-react-ui-kit';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { fetchAllUser, login, profile } from '../../services/api/api';
+import { Form, Input, Checkbox, Button } from 'antd';
+import { login, profile } from '../../services/api/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { fa0, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { FacebookFilled } from '@ant-design/icons';
 
-function Login() {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileData, setProfileData] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (values) => {
     try {
-      const data = await login(email, password);
+      const data = await login(values.email, values.password);
       console.log('Đăng nhập thành công:', data);
       setIsLoggedIn(true);  // Đánh dấu người dùng đã đăng nhập thành công
       setError(null);  // Xóa lỗi nếu có
     } catch (error) {
       setError('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.');
     }
-    
   };
 
   useEffect(() => {
@@ -147,68 +41,59 @@ function Login() {
   }
 
   return (
-    <MDBContainer className="p-3 my-5 d-flex flex-column w-50">
-      <form onSubmit={handleSubmit}>
-        <MDBInput 
-          wrapperClass='mb-4' 
-          label='Email address' 
-          id='form1' 
-          type='email' 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <MDBInput 
-          wrapperClass='mb-4' 
-          label='Password' 
-          id='form2' 
-          type='password' 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
+      <Form
+        name="login"
+        initialValues={{ remember: true }}
+        onFinish={handleSubmit}
+      >
+        <Form.Item
+          label="Email address"
+          name="email"
+          rules={[{ required: true, message: 'Please input your email!' }]}
+        >
+          <Input 
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Item>
 
-        <div className="d-flex justify-content-between mx-3 mb-4">
-          <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
-          <a href="#!">Forgot password?</a>
-        </div>
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        >
+          <Input.Password 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Form.Item>
+
+        <Form.Item name="remember" valuePropName="checked">
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
-        <MDBBtn className="mb-4" type="submit">Sign in</MDBBtn>
-      </form>
-
-      {isLoggedIn && profileData && (
-        <div className="profile-info">
-          <h3>Thông tin người dùng:</h3>
-          <p>Email: {profileData.email}</p>
-          <p>Tên: {profileData.firstName} {profileData.lastName}</p>
-          <p>Số điện thoại: {profileData.phoneNumber}</p>
-          <p>Địa chỉ: {profileData.addresses}</p>
-        </div>
-      )}
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Sign in
+          </Button>
+        </Form.Item>
+      </Form>
 
       <div className="text-center">
-        <p>Not a member? <a href="#!">Register</a></p>
-        <p>or sign up with:</p>
-
-        <div className='d-flex justify-content-between mx-auto' style={{ width: '40%' }}>
-          <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-            <MDBIcon fab icon='facebook-f' size="sm" />
-          </MDBBtn>
-
-          <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-            <MDBIcon fab icon='twitter' size="sm" />
-          </MDBBtn>
-
-          <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-            <MDBIcon fab icon='google' size="sm" />
-          </MDBBtn>
-
-          <MDBBtn tag='a' color='none' className='m-1' style={{ color: '#1266f1' }}>
-            <MDBIcon fab icon='github' size="sm" />
-          </MDBBtn>
+        <p>Not a member? <a href="#!">Register or sign up with:</a></p>
+        {/* test icon */}
+        <div className='d-flex justify-content-between mx-auto' style={{ width: '40%' }}> 
+          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
         </div>
       </div>
-    </MDBContainer>
+    </div>
   );
 }
 
