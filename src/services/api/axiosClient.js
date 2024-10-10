@@ -1,13 +1,11 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL: 'https://reqres.in',
-    timeout: 1000,
-    headers: {
-        'Content-Type': 'application/json',
-    }
-
-})
+  baseURL: 'http://localhost:3000/api', 
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 // Interceptors
 // Add a request interceptor
 axiosClient.interceptors.request.use(function (config) {
