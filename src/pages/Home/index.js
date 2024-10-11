@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react';
 import styles from './Home.module.scss';
-import { fetchAllUser } from '../../../src/services/api/api';
+// import { fetchAllUser } from '../../../src/services/api/api';
 
 
 function Home() {
 
-    const [listUsers, setListUsers] = useState([]);
+    // const [listUsers, setListUsers] = useState([]);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        getUsers();
-    }, [])
+    //     getUsers();
+    // }, [])
 
-    const getUsers = async () => {
-        let res = await fetchAllUser();
-        console.log("check", res);
-        if(res && res.data && res.data.data) {
-            setListUsers(res.data.data);
-        }
-    }
+    // const getUsers = async () => {
+    //     let res = await fetchAllUser();
+    //     console.log("check", res);
+    //     if(res && res.data && res.data.data) {
+    //         setListUsers(res.data.data);
+    //     }
+    // }
     
     return (
     
