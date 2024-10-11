@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Checkbox, Button } from 'antd';
-import { login, profile } from '../../services/api/api';
+import { login, getUserProfile } from '../../services/api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fa0, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { FacebookFilled } from '@ant-design/icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [profileData, setProfileData] = useState(null);
+  const [profileData, setProfileData] = useState('');
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async () => {
     try {
-      const data = await login(values.email, values.password);
-      console.log('Đăng nhập thành công:', data);
+      const {accessToken, userEmail} = await login(email, password);
+      console.log('Đăng nhập thành công:', userEmail);
       setIsLoggedIn(true);  // Đánh dấu người dùng đã đăng nhập thành công
-      setError(null);  // Xóa lỗi nếu có
+      setError(null);  // Xóa lỗi nếu có4
+      setEmail(userEmail);
     } catch (error) {
       setError('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.');
     }
@@ -28,12 +28,14 @@ const Login = () => {
       getProfile();
     }
   }, [isLoggedIn, email]);
-
+  
   const getProfile = async () => {
     try {
         // Sử dụng email đã giải mã để gọi profile
-        let res = await profile(email);
-        setProfileData(res); // Lưu dữ liệu profile
+        let res = await getUserProfile(email);
+        if(res) {
+          setProfileData(res); // Lưu dữ liệu profile
+        }
         console.log("Thông tin profile:", res);
     } catch (error) {
         console.error("Lỗi khi lấy thông tin profile:", error);
@@ -82,6 +84,8 @@ const Login = () => {
           </Button>
         </Form.Item>
       </Form>
+
+      
 
       <div className="text-center">
         <p>Not a member? <a href="#!">Register or sign up with:</a></p>
