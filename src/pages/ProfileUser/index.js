@@ -7,6 +7,7 @@ import PageWrapper from '../../components/common/layout/PageWrapper';
 import useTranslate from '../../components/hooks/useTranslate';
 import { commonMessage } from '../../components/locales/intl';
 import { defineMessages } from 'react-intl';
+import styles from './ProfileUser.module.scss';
 
 const messages = defineMessages({
   jewelryTitle: {
@@ -15,7 +16,7 @@ const messages = defineMessages({
   },
 });
 
-const Login = () => {
+const ProfileUser = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -60,63 +61,36 @@ const Login = () => {
     //     { breadcrumbName: translate.formatMessage(messages.jewelryTitle), path: `/jewelry` },
     //     ]}
     // >
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
-        <Form
-          name="login"
-          initialValues={{ remember: true }}
-          onFinish={handleSubmit}
-        >
-          <Form.Item
-            label="Email address"
-            name="email"
-            rules={[{ required: true, message: 'Please input your email!' }]}
-          >
-            <Input 
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Item>
+      <div className={styles.profile}>
+        <div className={styles.profileButton}>
+          <h1>Profile User</h1>
+        </div>
 
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
-          >
-            <Input.Password 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Item>
+        <div className={styles.profileUser}>
+          <span>THÔNG TIN TÀI KHOẢN</span>
 
-          <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Sign in
-            </Button>
-          </Form.Item>
-        </Form>
-
-        
-
-        <div className="text-center">
-          <p>Not a member? <a href="#!">Register or sign up with:</a></p>
-          {/* test icon */}
-          <div className='d-flex justify-content-between mx-auto' style={{ width: '40%' }}> 
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+          <div className={styles.user}>
+              <span>Họ tên: </span>
+              <span>Email: </span>
+              <span>Điện thoại: </span>
+              <span>Công ty: </span>
+              <span>Địa chỉ: </span>
           </div>
+
+          {/* Hiển thị thông tin người dùng */}
+          {/* {profile && (
+            <div>
+              <h2>Thông tin người dùng</h2>
+              <p>Tên: {profile.firstName} {profile.lastName}</p>
+              <p>Email: {profile.email}</p>
+              <p>Số điện thoại: {profile.phoneNumber}</p>
+              <p>Địa chỉ: {profile.addresses.map(addr => addr.street).join(', ')}</p>
+            </div>
+          )} */}
         </div>
       </div>
     // </PageWrapper>
   );
 }
 
-export default Login;
+export default ProfileUser;

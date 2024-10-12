@@ -5,12 +5,13 @@ import Login from '../pages/Login';
 import Profile from '../pages/Profile';
 import Upload from '../pages/Upload';
 import Search from '../pages/Search';
+import ProfileUser from '../pages/ProfileUser';
 
 // không cần đăng nhập vẫn xem được
 const publicRoutes = [
     { path: '/', component: Home },
     { path: '/login', component: Login },
-    { path: '/profile', component: Profile },
+    { path: '/profileUser', component: ProfileUser },
     { path: '/search', component: Search, layout: null },
     { path: '/upload', component: Upload, layout: HeaderOnly },
 ];
