@@ -5,7 +5,7 @@ const register = async (req, res) => {
 
   try {
     const result = await authService.registerUser({ firstName, lastName, email, phoneNumber, password });
-    res.status(201).json({ message: 'Tạo tài khoản thành công', user: result });
+    res.status(201).json({ user: result });
   } catch (error) {
     console.log(error)
     res.status(400).json({ message: error.message });

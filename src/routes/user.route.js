@@ -44,7 +44,7 @@ router.get('/profiles/:email', userController.getProfileByEmail);
 
 /**
  * @swagger
- * /users/profiles/update/{email}:
+ * /users/profiles/{email}:
  *   put:
  *     tags: 
  *       - User
@@ -78,7 +78,7 @@ router.get('/profiles/:email', userController.getProfileByEmail);
  *         description: Lỗi server
  */
 
-router.put('/profiles/update/:email', userController.updateProfileByEmail);
+router.put('/profiles/:email', userController.updateProfileByEmail);
 
 
 /**
@@ -132,7 +132,7 @@ router.put('/change-password/:email', userController.changePasswordByEmail);
 
 /**
  * @swagger
- * /users/addresses/create/{email}:
+ * /users/addresses/{email}:
  *   post:
  *     tags: 
  *       - User
@@ -188,11 +188,11 @@ router.put('/change-password/:email', userController.changePasswordByEmail);
  *         description: Lỗi server
  */
 
-router.post('/addresses/create/:email', userController.createAddressByEmail);
+router.post('/addresses/:email', userController.createAddressByEmail);
 
 /**
  * @swagger
- * /users/addresses/update/{ObjectId}:
+ * /users/addresses/{ObjectId}:
  *   put:
  *     tags:
  *       - User
@@ -241,7 +241,7 @@ router.post('/addresses/create/:email', userController.createAddressByEmail);
  *       500:
  *         description: Lỗi server
  */
-router.put('/addresses/update/:ObjectId', userController.updateAddressById);
+router.put('/addresses/:ObjectId', userController.updateAddressById);
 
 /**
  * @swagger
@@ -281,4 +281,39 @@ router.put('/addresses/update/:ObjectId', userController.updateAddressById);
  *         description: Lỗi server
  */
 router.get('/addresses/:email', userController.getAddressesByEmail);
+
+/**
+ * @swagger
+ * /users/addresses/{ObjectId}:
+ *   delete:
+ *     tags:
+ *       - User
+ *     summary: Xóa địa chỉ của người dùng dựa trên ID địa chỉ
+ *     parameters:
+ *       - in: path
+ *         name: ObjectId
+ *         required: true
+ *         description: ID của địa chỉ cần xóa
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Địa chỉ đã được xóa thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Địa chỉ đã được xóa thành công"
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ *       404:
+ *         description: Không tìm thấy địa chỉ
+ *       500:
+ *         description: Lỗi server
+ */
+router.delete('/addresses/:ObjectId', userController.deleteAddressById);
+
 module.exports = router;

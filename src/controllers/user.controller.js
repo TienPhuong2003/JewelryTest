@@ -99,7 +99,7 @@ const createAddressByEmail = async (req, res) => {
 };
 
 const updateAddressById = async (req, res) => {
-  const idAddress  = req.params; // Lấy email từ URL
+  const idAddress = req.params.ObjectId; // Lấy ObjectId từ URL
   const data = req.body;
   console.log( idAddress)
   try {
@@ -132,4 +132,21 @@ const getAddressesByEmail = async (req, res) => {
       return res.status(404).json({ message: error.message }); // Trả về thông báo lỗi
   }
 };
-module.exports = { getProfileByEmail, changePasswordByEmail, updateProfileByEmail, createAddressByEmail, updateAddressById ,getAddressesByEmail}
+const deleteAddressById = async (req, res) => {
+  const { ObjectId } = req.params; // Lấy ObjectId từ params
+
+  try {
+    // Gọi hàm service để xóa địa chỉ
+    const result = await profileService.deleteAddressById(ObjectId);
+
+    if (result) {
+      return res.status(200).json({ message: 'Địa chỉ đã được xóa thành công' });
+    } else {
+      return res.status(404).json({ message: 'Không tìm thấy địa chỉ' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: 'Đã xảy ra lỗi khi xóa địa chỉ' });
+  }
+};
+module.exports = { getProfileByEmail, changePasswordByEmail, updateProfileByEmail, createAddressByEmail, 
+  updateAddressById ,getAddressesByEmail,deleteAddressById,}

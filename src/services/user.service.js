@@ -2,6 +2,7 @@ const { use } = require('passport');
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const Address = require('../models/address.model');
+const Profile = require('../models/profile.model')
 const getProfileByEmail = async (email) => {
   try {
     // Tìm người dùng dựa trên email và populate thông tin từ bảng Profile và Address
@@ -167,7 +168,7 @@ const updateAddressById = async (idAddress, data) => {
   try {
     // Tìm địa chỉ dựa trên ID
     console.log(idAddress)
-    const address = await Address.findById(idAddress);
+    const address = await Address.findOne({'_id': idAddress});
 
     console.log(address)
     if (!address) {
@@ -185,6 +186,7 @@ const updateAddressById = async (idAddress, data) => {
 
     return address; // Trả về địa chỉ đã được cập nhật
   } catch (error) {
+    console.log(error)
     throw new Error('Lỗi khi cập nhật địa chỉ');
   }
 };
@@ -212,6 +214,32 @@ const getAddressesByEmail = async (email) => {
     throw new Error(error.message); // Ném lỗi để controller xử lý
   }
 }
+const deleteAddressById = async (addressId) => {
+  try {
+    // Bước 1: Xóa địa chỉ từ bảng Address
+    const deletedAddress = await Address.findByIdAndDelete(addressId);
+
+    if (!deletedAddress) {
+      return false; // Không tìm thấy địa chỉ để xóa
+    }
+
+    // Bước 2: Tìm tất cả profile có chứa addressId trong mảng profile_addresses
+    const updatedProfiles = await Profile.updateMany(
+      { profile_addresses: addressId }, // Tìm các profile có chứa addressId
+      { $pull: { profile_addresses: addressId } } // Loại bỏ addressId khỏi profile_addresses
+    );
+
+    // Kiểm tra nếu có profile nào được cập nhật
+    if (updatedProfiles.matchedCount === 0) {
+      console.log('Không tìm thấy profile nào chứa địa chỉ này');
+    }
+    return true; // Thành công
+  } catch (error) {
+    console.error(error);
+    throw new Error('Lỗi khi xóa địa chỉ');
+  }
+};
+
 
 module.exports = {
   getProfileByEmail,
@@ -220,4 +248,5 @@ module.exports = {
   createAddressByEmail,
   updateAddressById,
   getAddressesByEmail,
+  deleteAddressById,
 };
