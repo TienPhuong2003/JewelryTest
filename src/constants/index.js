@@ -12,9 +12,9 @@ export const fixedPath = {
     aboutUs: `${apiUrl}${process.env.REACT_APP_ABOUT_US_PATH}`,
 };
 
-export const brandName = 'Video Book CMS';
+export const brandName = 'Jewelry';
 
-export const appName = 'video-book-app';
+export const appName = 'jewelry-app';
 
 export const storageKeys = {
     USER_ACCESS_TOKEN: `${appName}-user-access-token`,
