@@ -17,21 +17,6 @@ const messages = defineMessages({
 });
 
 const CartUser = () => {
-  const [email, setEmail] = useState('huycuong140203@gmail.com');
-  const [profileData, setProfileData] = useState('');
-  const translate = useTranslate();
-
-  useEffect(() => {
-      getProfile();
-  }, []);
-
-  const getProfile = async () => {
-      const res = await getUserProfile(email);
-      if (res) {
-        setProfileData(res); // Đảm bảo bạn truy cập đúng vào dữ liệu phản hồi
-      }
-      console.log("Thông tin profile:", res);
-  };
 
   return (
     // <PageWrapper
@@ -42,15 +27,6 @@ const CartUser = () => {
       <div className={styles.profile}>
         <div className={styles.profileUser}>
           <span>ĐƠN HÀNG CỦA BẠN</span>
-          {profileData && (
-            <div className={styles.user}>
-                <span>Họ tên: {profileData.firstName} {profileData.lastName}</span>
-                <span>Email: {profileData.email}</span>
-                <span>Điện thoại: {profileData.phoneNumber}</span>
-                <span>Công ty: </span>
-                <span>Địa chỉ: {profileData.addresses.map(addr => addr.street).join(', ')}</span>
-            </div>
-          )}
         </div>
       </div>
     // </PageWrapper>

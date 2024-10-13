@@ -17,21 +17,48 @@ const messages = defineMessages({
 });
 
 const ProfileUser = () => {
-  const [email, setEmail] = useState('huycuong140203@gmail.com');
-  const [profileData, setProfileData] = useState('');
-  const translate = useTranslate();
+  
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const email = localStorage.getItem('userEmail');
 
   useEffect(() => {
-      getProfile();
-  }, []);
-
-  const getProfile = async () => {
-      const res = await getUserProfile(email);
-      if (res) {
-        setProfileData(res); // Đảm bảo bạn truy cập đúng vào dữ liệu phản hồi
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const data = await getUserProfile(email);
+        setProfileData(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
       }
-      console.log("Thông tin profile:", res);
-  };
+    };
+
+    if (email) {
+      fetchProfile();
+    }
+  }, [email]);
+  
+  // const [email, setEmail] = useState('huycuong140203@gmail.com');
+  // const [profileData, setProfileData] = useState('');
+  // const translate = useTranslate();
+
+  // useEffect(() => {
+  //     getProfile();
+  // }, []);
+
+  // const getProfile = async () => {
+  //     const res = await getUserProfile(email);
+  //     if (res) {
+  //       setProfileData(res); // Đảm bảo bạn truy cập đúng vào dữ liệu phản hồi
+  //     }
+  //     // setEmail(res.email);
+  //     console.log(res.email);
+      
+  //     console.log("Thông tin profile:", res);
+  // };
 
   return (
     // <PageWrapper
@@ -48,7 +75,7 @@ const ProfileUser = () => {
                 <span>Email: {profileData.email}</span>
                 <span>Điện thoại: {profileData.phoneNumber}</span>
                 <span>Công ty: </span>
-                <span>Địa chỉ: {profileData.addresses.map(addr => addr.street).join(', ')}</span>
+                <span>Địa chỉ: </span>
             </div>
           )}
         </div>

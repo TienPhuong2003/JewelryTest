@@ -2,17 +2,21 @@ import { DefaultProfile, HeaderOnly } from '../components/Layout';
 
 import Home from '../pages/Home';
 import Login from '../pages/Login';
-import Profile from '../pages/Profile';
+import Profile from '../pages/Register';
 import Upload from '../pages/Upload';
 import Search from '../pages/Search';
 import ProfileUser from '../pages/ProfileUser/pageProfile/profileUser';
 import CartUser from '../pages/ProfileUser/pageCart/cartUser';
 import PasswordUser from '../pages/ProfileUser/pagePassword/passwordUser';
 import AddressesUser from '../pages/ProfileUser/pageAddresses/addressesUser';
+import Register from '../pages/Register';
+import VerifyRegister from '../pages/VerifyRegister';
 
 // không cần đăng nhập vẫn xem được
 const publicRoutes = [
     { path: '/', component: Home },
+    { path: '/register', component: Register },
+    { path: '/verifyRegister', component: VerifyRegister },
     { path: '/login', component: Login },
     { path: '/search', component: Search, layout: null },
     { path: '/upload', component: Upload, layout: HeaderOnly },
