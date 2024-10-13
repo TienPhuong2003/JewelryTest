@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Checkbox, Button } from 'antd';
-import { login, getUserProfile } from '../../services/api/api';
+import { getUserProfile, register } from '../../services/api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import PageWrapper from '../../components/common/layout/PageWrapper';
@@ -16,38 +16,59 @@ const messages = defineMessages({
   },
 });
 
-const Login = () => {
+const Register = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const translate = useTranslate();
 
   const handleSubmit = async () => {
-    try {
-      const {accessToken, userEmail} = await login(email, password);
-      console.log('Đăng nhập thành công:', userEmail);
-      setError(null);  // Xóa lỗi nếu có4
-      setEmail(userEmail);
-      localStorage.setItem('userEmail', userEmail);
-      navigate('/account', { state: { email: userEmail } });
-    } catch (error) {
-      setError('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.');
-    }
+      const response = await register(firstName, lastName, email, phoneNumber, password);
+      
+      const verifyUrl = response.user.verifyUrl;
+      const urlParams = new URLSearchParams(verifyUrl.split('?')[1]);
+      const q = urlParams.get('q');
+      
+      setError(null);
+      setEmail(response.email);
+      navigate('/verifyRegister', { state: { q: q } });
   };
 
   return (
-    // <PageWrapper
-    //   routes={[
-    //     { breadcrumbName: translate.formatMessage(messages.jewelryTitle), path: `/jewelry` },
-    //     ]}
-    // >
       <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
         <Form
-          name="login"
+          name="register"
           initialValues={{ remember: true }}
           onFinish={handleSubmit}
         >
+          <Form.Item
+            label="First Name"
+            name="firstName"
+            rules={[{ required: true, message: 'Please input your first name!' }]}
+          >
+            <Input 
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Last Name"
+            name="lastName"
+            rules={[{ required: true, message: 'Please input your last name!' }]}
+          >
+            <Input 
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </Form.Item>
+
           <Form.Item
             label="Email address"
             name="email"
@@ -57,6 +78,18 @@ const Login = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Phone Number"
+            name="phoneNumber"
+            rules={[{ required: true, message: 'Please input your phone number!' }]}
+          >
+            <Input 
+              type="text"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
             />
           </Form.Item>
 
@@ -79,12 +112,10 @@ const Login = () => {
 
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Sign in
+              Register
             </Button>
           </Form.Item>
         </Form>
-
-        
 
         <div className="text-center">
           <p>Not a member? <a href="#!">Register or sign up with:</a></p>
@@ -97,8 +128,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    // </PageWrapper>
   );
 }
 
-export default Login;
+export default Register;
