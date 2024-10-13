@@ -3,6 +3,17 @@ import { Form, Input, Checkbox, Button } from 'antd';
 import { login, getUserProfile } from '../../services/api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import PageWrapper from '../../components/common/layout/PageWrapper';
+import useTranslate from '../../components/hooks/useTranslate';
+import { commonMessage } from '../../components/locales/intl';
+import { defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  jewelryTitle: {
+    id: 'src.pages.Login.index.jewelry',
+    defaultMessage: 'Jewelry'
+  },
+});
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +21,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileData, setProfileData] = useState('');
+  const translate = useTranslate();
 
   const handleSubmit = async () => {
     try {
@@ -43,61 +55,67 @@ const Login = () => {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
-      <Form
-        name="login"
-        initialValues={{ remember: true }}
-        onFinish={handleSubmit}
-      >
-        <Form.Item
-          label="Email address"
-          name="email"
-          rules={[{ required: true, message: 'Please input your email!' }]}
+    // <PageWrapper
+    //   routes={[
+    //     { breadcrumbName: translate.formatMessage(messages.jewelryTitle), path: `/jewelry` },
+    //     ]}
+    // >
+      <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
+        <Form
+          name="login"
+          initialValues={{ remember: true }}
+          onFinish={handleSubmit}
         >
-          <Input 
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Item>
+          <Form.Item
+            label="Email address"
+            name="email"
+            rules={[{ required: true, message: 'Please input your email!' }]}
+          >
+            <Input 
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Item>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: 'Please input your password!' }]}
+          >
+            <Input.Password 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Item>
 
-        <Form.Item name="remember" valuePropName="checked">
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
+          <Form.Item name="remember" valuePropName="checked">
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Sign in
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Sign in
+            </Button>
+          </Form.Item>
+        </Form>
 
-      
+        
 
-      <div className="text-center">
-        <p>Not a member? <a href="#!">Register or sign up with:</a></p>
-        {/* test icon */}
-        <div className='d-flex justify-content-between mx-auto' style={{ width: '40%' }}> 
-          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-          <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+        <div className="text-center">
+          <p>Not a member? <a href="#!">Register or sign up with:</a></p>
+          {/* test icon */}
+          <div className='d-flex justify-content-between mx-auto' style={{ width: '40%' }}> 
+            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
+          </div>
         </div>
       </div>
-    </div>
+    // </PageWrapper>
   );
 }
 

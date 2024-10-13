@@ -3,12 +3,19 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import GlobalStyles from './components/GlobalStyles';
+import LanguageProvider from './components/locales/LanguageProvider';
+import { Provider } from 'react-redux';
+import store from '../src/store';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
         <GlobalStyles>
-            <App />
+            <Provider store={store}>
+                <LanguageProvider>
+                    <App />
+                </LanguageProvider>
+            </Provider>
         </GlobalStyles>
     </React.StrictMode>,
 );
