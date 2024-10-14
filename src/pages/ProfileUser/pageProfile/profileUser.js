@@ -68,7 +68,7 @@ const ProfileUser = () => {
     // >
       <div className={styles.profile}>
         <div className={styles.profileUser}>
-          <span>THÔNG TIN TÀI KHOẢN</span>
+          <span style={{fontSize: '24px', fontWeight: '300'}}>THÔNG TIN TÀI KHOẢN</span>
           {profileData && (
             <div className={styles.user}>
                 <span>Họ tên: {profileData.firstName} {profileData.lastName}</span>
