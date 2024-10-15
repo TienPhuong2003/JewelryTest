@@ -17,7 +17,7 @@ const messages = defineMessages({
 });
 
 const CartUser = () => {
-
+  const [orders, setOrders] = useState([]);
   return (
     // <PageWrapper
     //   routes={[
@@ -26,7 +26,37 @@ const CartUser = () => {
     // >
       <div className={styles.profile}>
         <div className={styles.profileUser}>
-          <span>ĐƠN HÀNG CỦA BẠN</span>
+          <span style={{fontSize: '24px', fontWeight: '300'}}>ĐƠN HÀNG CỦA BẠN</span>
+          <table style={{ width: '100%', height: '105px', borderCollapse: 'collapse', marginTop: '20px', border: '1px solid #ebebeb' }}>
+                <thead>
+                    <tr>
+                        <th style={{ width: '182px', height: '35px', border: '1px solid #ccc', backgroundColor: '#01567f', color: 'white' }}>Đơn hàng</th>
+                        <th style={{ width: '108px', height: '35px', border: '1px solid #ccc', backgroundColor: '#01567f', color: 'white' }}>Ngày</th>
+                        <th style={{ width: '132px', height: '35px', border: '1px solid #ccc', backgroundColor: '#01567f', color: 'white' }}>Địa chỉ</th>
+                        <th style={{ width: '282px', height: '35px', border: '1px solid #ccc', backgroundColor: '#01567f', color: 'white' }}>Giá trị đơn hàng</th>
+                        <th style={{ width: '245px', height: '35px', border: '1px solid #ccc', backgroundColor: '#01567f', color: 'white' }}>TT thanh toán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {orders.length === 0 ? (
+                        <tr>
+                            <td colSpan="5" style={{ textAlign: 'center', color: '#666', padding: '20px' }}>
+                                Không có đơn hàng nào.
+                            </td>
+                        </tr>
+                    ) : (
+                        orders.map((order, index) => (
+                            <tr key={index}>
+                                <td>{order.id}</td>
+                                <td>{order.date}</td>
+                                <td>{order.address}</td>
+                                <td>{order.value}</td>
+                                <td>{order.paymentStatus}</td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
         </div>
       </div>
     // </PageWrapper>

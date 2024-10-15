@@ -1,8 +1,29 @@
 .profile {
-    .profileUser {
-        .user{
-            display: flex;
-            flex-direction: column;
-        }
+  .profileUser {
+    .user {
+      display: flex;
+      flex-direction: column;
     }
+    .resetPassword {
+      padding: 0 15px;
+      border-radius: 3px !important;
+      height: 40px;
+      line-height: 40px;
+      background: #01567f;
+      position: relative;
+      margin-left: 0px;
+      color: #fff;
+      border: solid 1px transparent;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 14px;
+
+      &:hover {
+        background: #01567f !important;
+        border-color: #01567f !important;
+        opacity: 0.6;
+        cursor: pointer;
+      }
+    }
+  }
 }
