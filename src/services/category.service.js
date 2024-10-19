@@ -27,8 +27,7 @@ const getParentCategories = async () => {
     } catch (error) {
       throw new Error('Lỗi khi lấy danh mục cha: ' + error.message);
     }
-  };
-
+  }
   // Lấy các danh mục con theo ID cha
 const getChildCategoriesByParentId = async (parentId) => {
     try {
@@ -48,7 +47,6 @@ const getChildCategoriesByParentId = async (parentId) => {
       if (!currentCategory) {
         throw new Error('Không tìm thấy danh mục để cập nhật');
       }
-  
       // Kiểm tra nếu category_parentId của danh mục hiện tại là null
       if (currentCategory.category_parentId === null) {
         categoryData.category_slug = category_name;
@@ -59,7 +57,6 @@ const getChildCategoriesByParentId = async (parentId) => {
         }
         return updatedCategory;
       }
-  
       // Nếu category_parentId không phải null, kiểm tra slug của danh mục mới
       if (category_slug) {
         const parentCategory = await Category.findOne({
