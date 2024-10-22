@@ -290,7 +290,6 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 16) => {
 };
 
 // Tìm kiếm sản phẩm theo từ khóa
-
 const searchProducts = async (keyword, page, limit) => {
   try {
     const skip = (page - 1) * limit;
@@ -299,7 +298,17 @@ const searchProducts = async (keyword, page, limit) => {
     // Tìm các sản phẩm dựa trên từ khóa và phân trang
     const products = await Product.find({ product_name: regex })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .select('product_code product_name product_price product_sale_price product_category product_isAvailable product_short_description') // Chọn các trường cần thiết
+      .populate({
+        path: 'product_details', // Populate chi tiết sản phẩm
+        select: 'product_images', // Chọn mảng hình ảnh
+        populate: {
+          path: 'product_images', // Populate hình ảnh của sản phẩm
+          select: 'secure_url public_id asset_id', // Chọn các trường cần thiết từ hình ảnh
+          model: 'Image',
+        },
+      });
 
     // Đếm tổng số sản phẩm khớp với từ khóa
     const totalProducts = await Product.countDocuments({ product_name: regex });
@@ -319,6 +328,7 @@ const filterProducts = async (priceRanges, materials, sizes, idcategory, Page, L
   try {
     const skip = (Page - 1) * Limit;
     const orConditions = [];
+
     // Thêm điều kiện khoảng giá
     if (priceRanges && priceRanges.length > 0) {
       const priceConditions = priceRanges.map(range => {
@@ -354,9 +364,9 @@ const filterProducts = async (priceRanges, materials, sizes, idcategory, Page, L
 
     // Lọc theo idcategory nếu được cung cấp
     if (idcategory) {
-      matchConditions["product_category"] =new mongoose.Types.ObjectId(idcategory);
+      matchConditions["product_category"] = new mongoose.Types.ObjectId(idcategory);
     }
-    console.log( matchConditions["product_category"])
+
     // Truy vấn sản phẩm với điều kiện lọc và phân trang
     const products = await Product.aggregate([
       {
@@ -371,6 +381,14 @@ const filterProducts = async (priceRanges, materials, sizes, idcategory, Page, L
       { $match: { $and: [...orConditions, matchConditions] } },
       { $skip: skip },
       { $limit: Limit },
+      {
+        $lookup: {
+          from: "Images", // Tên collection của hình ảnh
+          localField: "product_details.product_images",
+          foreignField: "_id",
+          as: "product_details.product_images",
+        },
+      },
     ]);
 
     // Đếm tổng số sản phẩm phù hợp
@@ -398,6 +416,7 @@ const filterProducts = async (priceRanges, materials, sizes, idcategory, Page, L
     throw new Error("Lỗi khi lọc sản phẩm: " + error.message);
   }
 };
+
 
 
 module.exports = {
