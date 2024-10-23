@@ -1,0 +1,39 @@
+.wrapper {
+  margin-top: 20px;
+  padding-left: 110px;
+  .nameCart {
+    width: 1271px;
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-family: "Montserrat", sans-serif;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .cartLeft {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 968px;
+    height: 400px;
+    // height: 282px;
+
+    .img {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+    }
+
+    .empty {
+      margin: 0 0 15px 0;
+      text-align: center;
+      font-size: 18px;
+      color: #525252;
+      line-height: 1.7;
+      font-family: "Montserrat", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+      font-weight: 300;
+    }
+  }
+}

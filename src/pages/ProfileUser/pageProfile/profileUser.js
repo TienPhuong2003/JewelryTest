@@ -74,7 +74,6 @@ const ProfileUser = () => {
                 <span>Họ tên: {profileData.firstName} {profileData.lastName}</span>
                 <span>Email: {profileData.email}</span>
                 <span>Điện thoại: {profileData.phoneNumber}</span>
-                <span>Công ty: </span>
                 <span>Địa chỉ: </span>
             </div>
           )}
