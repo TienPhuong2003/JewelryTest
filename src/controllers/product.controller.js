@@ -88,6 +88,22 @@ const getAllProducts = async (req, res) => {
   }
 };
 
+const getSaleProducts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Trang hiện tại (mặc định là 1)
+    const limit = parseInt(req.query.limit) || 16; // Số sản phẩm mỗi trang (mặc định là 10)
+    const result = await productService.getSaleProducts(page, limit);
+
+    res.status(200).json({
+      message: "Lấy danh sách sản phẩm thành công",
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
 const getProductDetailsById = async (req, res) => {
   try {
     const productId = req.params.id; // Lấy ID sản phẩm từ request params
@@ -187,4 +203,5 @@ module.exports = {
   getProductsByCategory,
   searchProducts,
   filterProducts,
+  getSaleProducts,
 };

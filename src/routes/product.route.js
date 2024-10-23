@@ -742,4 +742,68 @@ router.get('/search', productController.searchProducts);
  */
 
 router.get('/filter', productController.filterProducts);
+
+/**
+ * @swagger
+ * /products/sales:
+ *   get:
+ *     summary: Lấy danh sách sản phẩm đang sale
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Số lượng sản phẩm trả về
+ *         example: 10
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Trang hiện tại của kết quả
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Lấy danh sách sản phẩm thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalItems:
+ *                   type: integer
+ *                   description: Tổng số lượng sản phẩm
+ *                 totalPages:
+ *                   type: integer
+ *                   description: Tổng số trang
+ *                 currentPage:
+ *                   type: integer
+ *                   description: Trang hiện tại
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Yêu cầu không hợp lệ"
+ *       404:
+ *         description: Không tìm thấy sản phẩm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Không tìm thấy sản phẩm"
+ */
+router.get('/sales', productController.getSaleProducts);
+
 module.exports = router;
