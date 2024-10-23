@@ -11,6 +11,7 @@ import PasswordUser from '../pages/ProfileUser/pagePassword/passwordUser';
 import AddressesUser from '../pages/ProfileUser/pageAddresses/addressesUser';
 import Register from '../pages/Register';
 import VerifyRegister from '../pages/VerifyRegister';
+import CartPage from '../pages/CartPage';
 
 // không cần đăng nhập vẫn xem được
 const publicRoutes = [
@@ -29,6 +30,8 @@ const publicRoutes = [
     { path: '/account/orders', component: CartUser, layout: DefaultProfile },
     { path: '/account/changepassword', component: PasswordUser, layout: DefaultProfile },
     { path: '/account/addresses', component: AddressesUser, layout: DefaultProfile },
+    { path: '/cart', component: CartPage },
+
 ];
 
 // ví dụ phải đăng nhập mới xem được
