@@ -13,6 +13,9 @@ import Register from "../pages/Register";
 import VerifyRegister from "../pages/VerifyRegister";
 import CartPage from "../pages/CartPage";
 import { DetailProduct } from "../pages/DetailProduct/DetailProduct";
+import ProductList from "../pages/ProductList";
+import VerifyOTP from "../pages/VerifyRegister";
+import ResetPassword from "../pages/ResetPassword";
 
 // không cần đăng nhập vẫn xem được
 const publicRoutes = [
@@ -43,7 +46,11 @@ const publicRoutes = [
     layout: DefaultProfile,
   },
   { path: "/cart", component: CartPage },
+  { path: "/otp", component: VerifyRegister },
   { path: "/detail-product", component: DetailProduct },
+  { path: "/list-product", component: ProductList },
+  { path: "/reset-password", component: ResetPassword },
+
 
 ];
 

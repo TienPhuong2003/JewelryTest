@@ -1,0 +1,34 @@
+.sidebar {
+    width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng bên trong */
+    box-sizing: border-box; /* Để padding và border được tính vào chiều rộng */
+  }
+  
+  .categorySection {
+    margin-bottom: 20px;
+  }
+  
+  .filterSection {
+    margin-top: 20px;
+  }
+  
+  .checkboxItem {
+    margin: 10px 0;
+  }
+  
+  .filterButtonContainer {
+    margin-top: 15px;
+  }
+  
+  .filterButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    width: 100%; /* Để nút lọc chiếm toàn bộ chiều rộng */
+  }
+  
+  .filterButton:hover {
+    background-color: #0056b3;
+  }
+  

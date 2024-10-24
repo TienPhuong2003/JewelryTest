@@ -31,12 +31,12 @@
       background-color: #ebebeb;
       border-radius: 5px;
       line-height: 30px;
-      margin: 0px;
       border: 1px solid #ebebeb;
       min-height: initial;
 
       .input {
         padding-left: 12px;
+        margin-top: 10px;
         background-color: transparent;
         width: 100%;
       }
@@ -203,8 +203,28 @@
     .account {
       position: relative;
       text-align: center;
-      width: 60px;
+      width: 120px;
       height: 58px;
+      padding-left: 60px;
+
+      .dropdownMenu{
+        display: flex;
+        position: absolute;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        right: 8px;
+        width: 120px;
+        height: 60px;
+        border-radius: 10px;
+        padding-top: 3px;
+        background-color: #ffffff;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+
+        .dropdownItem{
+          
+        }
+      }
 
       .taikhoan {
         display: inline-block;

@@ -1,134 +1,87 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Checkbox, Button } from 'antd';
-import { getUserProfile, register } from '../../services/api/api';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import PageWrapper from '../../components/common/layout/PageWrapper';
-import useTranslate from '../../components/hooks/useTranslate';
-import { commonMessage } from '../../components/locales/intl';
-import { defineMessages } from 'react-intl';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { register } from "../../services/api/authService";// Import hàm đăng ký từ service
+import styles from './register.module.scss'; // Import SCSS module
 
-const messages = defineMessages({
-  jewelryTitle: {
-    id: 'src.pages.Login.index.jewelry',
-    defaultMessage: 'Jewelry'
-  },
-});
-
-const Register = () => {
+export default function Register() {
+  const navigate = useNavigate(); 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const translate = useTranslate();
 
-  const handleSubmit = async () => {
-      const response = await register(firstName, lastName, email, phoneNumber, password);
-      
-      const verifyUrl = response.user.verifyUrl;
-      const urlParams = new URLSearchParams(verifyUrl.split('?')[1]);
-      const q = urlParams.get('q');
-      
-      setError(null);
-      setEmail(response.email);
-      navigate('/verifyRegister', { state: { q: q } });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = { firstName, lastName, email, phoneNumber, password }; // Dữ liệu đăng ký
+    console.log(data);
+    try {
+      const response = await register(data); // Gọi API đăng ký
+      console.log('Đăng ký thành công:', response);
+      const urlParams = new URLSearchParams(response.user.verifyUrl.split('?')[1]);
+      const q = urlParams.get('q'); // Lấy giá trị của q
+      navigate('/otp', { state: { q } }); // Truyền q vào state để sử dụng trong trang OTP
+
+    } catch (error) {
+      alert(error.message); // Hiển thị thông báo lỗi
+    }
   };
 
   return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
-        <Form
-          name="register"
-          initialValues={{ remember: true }}
-          onFinish={handleSubmit}
-        >
-          <Form.Item
-            label="First Name"
-            name="firstName"
-            rules={[{ required: true, message: 'Please input your first name!' }]}
-          >
-            <Input 
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Last Name"
-            name="lastName"
-            rules={[{ required: true, message: 'Please input your last name!' }]}
-          >
-            <Input 
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Email address"
-            name="email"
-            rules={[{ required: true, message: 'Please input your email!' }]}
-          >
-            <Input 
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Phone Number"
-            name="phoneNumber"
-            rules={[{ required: true, message: 'Please input your phone number!' }]}
-          >
-            <Input 
-              type="text"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
-          >
-            <Input.Password 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Item>
-
-          <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Register
-            </Button>
-          </Form.Item>
-        </Form>
-
-        <div className="text-center">
-          <p>Not a member? <a href="#!">Register or sign up with:</a></p>
-          {/* test icon */}
-          <div className='d-flex justify-content-between mx-auto' style={{ width: '40%' }}> 
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-            <Button icon={<FontAwesomeIcon icon={faCheck}/>} style={{ color: '#1266f1' }} />
-          </div>
+    <div className={styles['register-container']}>
+      <h1>ĐĂNG KÝ</h1>
+      <p className={styles['login-link']}>
+        Đã có tài khoản, đăng nhập <Link to="/">tại đây</Link>
+      </p>
+      <form className={styles['register-form']} onSubmit={handleSubmit}>
+        <input 
+          type="text" 
+          placeholder="Họ" 
+          required 
+          value={lastName} 
+          onChange={(e) => setLastName(e.target.value)} 
+        />
+        <input 
+          type="text" 
+          placeholder="Tên" 
+          required 
+          value={firstName} 
+          onChange={(e) => setFirstName(e.target.value)} 
+        />
+        <input 
+          type="email" 
+          placeholder="Email" 
+          required 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+        />
+        <input 
+          type="tel" 
+          placeholder="Số điện thoại" 
+          required 
+          value={phoneNumber} 
+          onChange={(e) => setPhone(e.target.value)} 
+        />
+        <input 
+          type="password" 
+          placeholder="Mật khẩu" 
+          required 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+        />
+        <button type="submit" className={styles['register-button']}>ĐĂNG KÝ</button>
+      </form>
+      <div className={styles['social-login']}>
+        <p>Hoặc đăng nhập bằng</p>
+        <div className={styles['social-buttons']}>
+          <button className={styles['facebook-button']}>
+            <i className="fab fa-facebook-f"></i> Facebook
+          </button>
+          <button className={styles['google-button']}>
+            <i className="fab fa-google"></i> Google
+          </button>
         </div>
       </div>
+    </div>
   );
 }
-
-export default Register;
