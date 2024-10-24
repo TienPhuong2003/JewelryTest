@@ -1,119 +1,105 @@
-import React, { useEffect, useState } from "react";
-import { Form, Input, Checkbox, Button } from "antd";
-import { login, getUserProfile } from "../../services/api/api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import PageWrapper from "../../components/common/layout/PageWrapper";
-import useTranslate from "../../components/hooks/useTranslate";
-import { commonMessage } from "../../components/locales/intl";
-import { defineMessages } from "react-intl";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { login, requestOTP, sendOTP } from "../../services/api/authService"; // Import các hàm từ service
+import styles from "./Login.module.scss"; // Import SCSS
 
-const messages = defineMessages({
-  jewelryTitle: {
-    id: "src.pages.Login.index.jewelry",
-    defaultMessage: "Jewelry",
-  },
-});
-
-const Login = () => {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState(""); // Email cho quên mật khẩu
   const navigate = useNavigate();
-  const translate = useTranslate();
 
-  const handleSubmit = async () => {
+  // Xử lý đăng nhập
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      const { accessToken, userEmail } = await login(email, password);
+      const { userEmail } = await login(email, password); // Gọi API đăng nhập
       console.log("Đăng nhập thành công:", userEmail);
-      setError(null); // Xóa lỗi nếu có4
       setEmail(userEmail);
+      // Lưu thông tin người dùng và điều hướng đến trang chủ (hoặc trang khác)
       localStorage.setItem("userEmail", userEmail);
       navigate("/account", { state: { email: userEmail } });
     } catch (error) {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.");
+      alert(error.message);
+    }
+  };
+
+  // Xử lý yêu cầu OTP quên mật khẩu
+  const handleResetPassword = async () => {
+    try {
+      const otpData = await sendOTP(forgotEmail); // Gọi API yêu cầu OTP
+      console.log("Yêu cầu OTP thành công:", otpData);
+      navigate("/reset-password");
+    } catch (error) {
+      alert(error.message);
     }
   };
 
   return (
-    // <PageWrapper
-    //   routes={[
-    //     { breadcrumbName: translate.formatMessage(messages.jewelryTitle), path: `/jewelry` },
-    //     ]}
-    // >
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "2rem" }}>
-      <Form
-        name="login"
-        initialValues={{ remember: true }}
-        onFinish={handleSubmit}
-      >
-        <Form.Item
-          label="Email address"
-          name="email"
-          rules={[{ required: true, message: "Please input your email!" }]}
-        >
-          <Input
+    <div className={styles.loginContainer}>
+      <div>
+        <h1>ĐĂNG NHẬP</h1>
+        <form className={styles.loginForm} onSubmit={handleLogin}>
+          <input
             type="email"
+            placeholder="Email"
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input.Password
+          <input
+            type="password"
+            placeholder="Mật khẩu"
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </Form.Item>
-
-        <Form.Item name="remember" valuePropName="checked">
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Sign in
-          </Button>
-        </Form.Item>
-      </Form>
-
-      <div className="text-center">
-        <p>
-          Not a member? <a href="#!">Register or sign up with:</a>
-        </p>
-        {/* test icon */}
-        <div
-          className="d-flex justify-content-between mx-auto"
-          style={{ width: "40%" }}
-        >
-          <Button
-            icon={<FontAwesomeIcon icon={faCheck} />}
-            style={{ color: "#1266f1" }}
-          />
-          <Button
-            icon={<FontAwesomeIcon icon={faCheck} />}
-            style={{ color: "#1266f1" }}
-          />
-          <Button
-            icon={<FontAwesomeIcon icon={faCheck} />}
-            style={{ color: "#1266f1" }}
-          />
-          <Button
-            icon={<FontAwesomeIcon icon={faCheck} />}
-            style={{ color: "#1266f1" }}
-          />
+          <button type="submit" className={styles.loginButton}>
+            ĐĂNG NHẬP
+          </button>
+        </form>
+        <div className={styles.forgotPasswordRegister}>
+          <a
+            href="#"
+            className={styles.forgotPassword}
+            onClick={() => setShowForgotPassword(!showForgotPassword)}
+          >
+            Quên mật khẩu?
+          </a>
+          <Link to="/register" className={styles.registerLink}>
+            Đăng ký tại đây
+          </Link>
+        </div>
+        {showForgotPassword && (
+          <div className={styles.forgotPasswordForm}>
+            <input
+              type="email"
+              placeholder="Nhập email để lấy lại mật khẩu"
+              required
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+            />
+            <button
+              className={styles.resetPasswordButton}
+              onClick={handleResetPassword}
+            >
+              Lấy lại mật khẩu
+            </button>
+          </div>
+        )}
+        <div className={styles.socialLogin}>
+          <p>hoặc đăng nhập qua</p>
+          <div className={styles.socialButtons}>
+            <button className={styles.facebookButton}>
+              <i className="fab fa-facebook-f"></i> Facebook
+            </button>
+            <button className={styles.googleButton}>
+              <i className="fab fa-google"></i> Google
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    // </PageWrapper>
   );
-};
-
-export default Login;
+}

@@ -1,0 +1,117 @@
+/* Container for the product list */
+.mainContent {
+    display: flex;
+    width: 100%; /* Đảm bảo nội dung sử dụng toàn bộ chiều rộng */
+  }
+  
+  .row {
+    display: flex;
+    flex-direction: row;
+    width: 100%; /* Sử dụng toàn bộ chiều rộng của phần tử cha */
+  }
+  
+  /* Section containing the products */
+  .productSection {
+    flex: 1; /* Để phần này chiếm phần còn lại */
+    padding: 15px; /* Khoảng cách bên trong */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header for the product section */
+  .productHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f0f0f0; /* Khung hơi xám cho tiêu đề */
+    border-radius: 8px;
+  }
+  
+  .productHeader h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .sortSelect {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Grid for products */
+  .productGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  /* Product card */
+  .productCard {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  
+    &:hover {
+      transform: translateY(-5px);
+    }
+  }
+  
+  /* Image container */
+  .productImage {
+    position: relative;
+    padding-top: 100%; /* Aspect ratio 1:1 */
+    background-color: #f0f0f0;
+  }
+  
+  .productImage img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Video icon */
+  .videoIcon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: white;
+    border-radius: 50%;
+    padding: 5px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Product information */
+  .productInfo {
+    padding: 15px;
+  }
+  
+  .productName {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 10px;
+    color: #333;
+  }
+  
+  .productPrice {
+    font-size: 18px;
+    font-weight: bold;
+    color: #e53e3e;
+    margin: 0;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .productGrid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  }
+  

@@ -1,50 +1,77 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { verifyOTP } from '../../services/api/api'; // Đảm bảo đường dẫn import đúng
+import { verifyOTP } from "../../services/api/authService"; // Import hàm xác minh OTP từ service
+import styles from './VerifyOTP.module.scss'; // Cập nhật import sang SCSS Module
 
-const VerifyRegister = () => {
+export default function VerifyOTP() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { q } = location.state || {};
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate(); // Khai báo useNavigate
+  const { q } = location.state || {}; // Lấy giá trị của q từ state
+  const [otp, setOtp] = useState(Array(6).fill('')); 
 
-  const handleVerify = async (event) => {
-    event.preventDefault(); // Ngăn chặn hành động mặc định của form submit
+  const handleOtpChange = (e, index) => {
+    const value = e.target.value;
 
+    // Cho phép nhập chữ và số
+    if (/^[a-zA-Z0-9]*$/.test(value) && value.length <= 1) {
+      const newOtp = [...otp];
+      newOtp[index] = value; 
+      setOtp(newOtp);
+
+      // Tự động chuyển sang ô tiếp theo nếu đã nhập
+      if (value && index < otp.length - 1) {
+        document.getElementById(`otp-input-${index + 1}`).focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    // Chuyển về ô trước nếu nhấn phím Backspace
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      document.getElementById(`otp-input-${index - 1}`).focus();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const otpCode = otp.join(''); 
+    
     try {
-      const response = await verifyOTP(q, otp);
-      console.log('OTP verification successful:', response);
-      setSuccess(true);
-      setError(null);  // Xóa lỗi nếu có
-
-      // Chuyển hướng người dùng đến trang đăng nhập hoặc trang khác
+      const response = await verifyOTP(otpCode, q); // Gọi API xác minh OTP với q
+      console.log('Xác minh thành công:', response);
+      alert(`Xác minh mã OTP thành công!`);
       navigate('/login');
     } catch (error) {
-      console.error('OTP verification failed:', error);
-      setError('Xác thực OTP thất bại. Vui lòng kiểm tra lại mã OTP.');
+      alert(error); // Hiển thị thông báo lỗi
     }
   };
 
   return (
-    <div>
-      <h1>Verify Email</h1>
-      <p>OTP đã được gửi, vui lòng kiểm tra email của bạn.</p>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>Xác thực OTP thành công!</p>}
-      {/* Form nhập mã OTP và gọi handleVerify để xác thực */}
-      <form onSubmit={handleVerify}>
-        <input 
-          type="text" 
-          placeholder="Enter OTP" 
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-        />
-        <button type="submit">Verify</button>
-      </form>
+    <div className={styles.otp}> 
+      <div className={styles.otpContainer}>
+        <header><i className="bx bxs-check-shield"></i></header>
+        <h4>Xác Minh OTP</h4>
+        <form className={styles.otpForm} onSubmit={handleSubmit}>
+          <div className={styles.inputField}>
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                id={`otp-input-${index}`}
+                value={digit}
+                onChange={(e) => handleOtpChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                maxLength="1"
+                required
+                autoComplete="off"
+              />
+            ))}
+          </div>
+          <button type="submit" className={styles.active}>
+            Xác Minh
+          </button>
+        </form>
+      </div>
     </div>
   );
-};
-
-export default VerifyRegister;
+}

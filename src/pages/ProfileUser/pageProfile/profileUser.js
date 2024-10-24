@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Checkbox, Button } from "antd";
-import { login, getUserProfile } from "../../../services/api/api";
+import { login, getUserProfile } from "../../../services/api/authService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import PageWrapper from "../../../components/common/layout/PageWrapper";
@@ -20,14 +20,17 @@ const ProfileUser = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const email = localStorage.getItem("userEmail");
+  const email = localStorage.getItem("email");
+
+  console.log(email);
+  
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
         const data = await getUserProfile(email);
-        setProfileData(data);
+        setProfileData(data.data);
       } catch (err) {
         setError(err);
       } finally {
@@ -58,7 +61,8 @@ const ProfileUser = () => {
 
   //     console.log("Thông tin profile:", res);
   // };
-
+  console.log("profileData",profileData);
+  
   return (
     // <PageWrapper
     //   routes={[
