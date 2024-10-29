@@ -45,7 +45,9 @@ export const login = async (email, password) => {
     console.log("User email:", userEmail);
     return { accessToken, userEmail };
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Đăng nhập thất bại");
+    const errorMessage = error.response?.data || 'Có lỗi xảy ra, vui lòng thử lại!';
+    console.error("Error:", errorMessage);
+    throw new Error(errorMessage.error);
   }
 };
 
@@ -58,14 +60,7 @@ export const requestOTP = async (email) => {
   }
 };
 
-export const getUserProfile = async (email) => {
-  try {
-    const response = await axios.get(`${API_URL}/users/profiles/${email}`, {});
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+
 
 export const sendOTP = async (email) => {
   try {
@@ -79,7 +74,7 @@ export const sendOTP = async (email) => {
   }
 };
 
-export const changePassword = async (
+export const forgotPassword = async (
   { otp, newPassword, confirmPassword },
   q
 ) => {

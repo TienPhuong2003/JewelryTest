@@ -4,6 +4,8 @@ import styles from "./Header.module.scss";
 import Tippy from "@tippyjs/react";
 import HeadlessTippy from "@tippyjs/react/headless";
 import Button from "../../../Button";
+import { getParentCategories, getChildrenCategories } from "../../../../services/api/categoryService";
+import { searchProducts, fetchProducts } from "../../../../services/api/productService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleXmark,
@@ -66,10 +68,66 @@ const MENU_ITEMS = [
 function Header() {
   const [cartCount, setCartCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
+  const [subcategories, setSubcategories] = useState({});
+  const [keyword, setKeyword] = useState(''); // State để lưu từ khóa tìm kiếm
+  const [products, setProducts] = useState([]); // State để lưu danh sách sản phẩm
+  const [page, setPage] = useState(1); // State để quản lý trang
+  const limit = 10; // Số sản phẩm hiển thị mỗi trang
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (keyword.trim() === '') {
+        setProducts([]); // Nếu không có từ khóa, reset sản phẩm
+        return;
+      }
+
+      const result = await searchProducts(keyword, limit, page); // Gọi API tìm kiếm sản phẩm
+
+      if (result.error) {
+        console.error("Lỗi khi tìm kiếm sản phẩm:", result.error);
+      } else {
+        setProducts(result.products); // Lưu danh sách sản phẩm vào state
+      }
+    };
+
+    const debounceTimeout = setTimeout(() => {
+      fetchProducts();
+    }, 300); // Thêm độ trễ để giảm số lần gọi API
+
+    return () => clearTimeout(debounceTimeout); // Dọn dẹp timeout khi từ khóa thay đổi
+  }, [keyword, page]); // Chạy khi từ khóa hoặc trang thay đổi
+
+  const handleInputChange = (e) => {
+    setKeyword(e.target.value); // Cập nhật từ khóa khi người dùng nhập
+  };
+  
 
   useEffect(() => {
     setCartCount(0);
   }, []);
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const categories = await getParentCategories();
+        setMenuItems(categories); // Lưu danh mục cha từ API vào state
+      } catch (error) {
+        console.error("Lỗi khi lấy danh mục:", error);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
+
+  const handleMouseEnter = async (parentId) => {
+    try {
+      const children = await getChildrenCategories(parentId);
+      setSubcategories((prev) => ({ ...prev, [parentId]: children })); // Cập nhật danh mục con cho danh mục cha
+    } catch (error) {
+      console.error("Lỗi khi lấy danh mục con:", error);
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -87,14 +145,19 @@ function Header() {
 
       <div className={styles.center}>
         <div className={styles.search}>
-          <input className={styles.input} placeholder="Tìm sản phẩm..." />
+          <input
+            className={styles.input}
+            placeholder="Tìm sản phẩm..."
+            value={keyword}
+            onChange={handleInputChange} 
+          />
           <FontAwesomeIcon
             className={styles.iconGlass}
             icon={faMagnifyingGlass}
           />
         </div>
 
-        <div className={styles.menu}>
+        {/* <div className={styles.menu}>
           <ul>
             <li>
               SALE
@@ -368,7 +431,52 @@ function Header() {
             </li>
           </ul>
         </div>
+      </div> */}
+
+        <div className={styles.menu}>
+          <ul>
+            <li>
+              SALE
+              <FontAwesomeIcon className={styles.iconFire} icon={faFire} />
+            </li>
+            {menuItems.map((item) => (
+              <li
+                key={item._id}
+                onMouseEnter={() => handleMouseEnter(item._id)}
+              >
+                {item.category_name.toUpperCase()}
+                <div className={styles.submenu}>
+                  <div className={styles.menu1}>
+                    {/* Hiển thị danh mục con nếu có */}
+                    {subcategories[item._id] &&
+                    subcategories[item._id].length > 0 ? (
+                      subcategories[item._id].map((subcategory) => (
+                        <ul key={subcategory._id} className={styles.ul1}>
+                          <div className={styles.li1}>
+                            <li className={styles.headerli}>
+                              {subcategory.category_name}
+                            </li>
+                            {/* Hiển thị các mục nhỏ hơn nếu có */}
+                            {subcategory.items &&
+                              subcategory.items.map((subItem) => (
+                                <li key={subItem._id}>
+                                  {subItem.category_name}
+                                </li>
+                              ))}
+                          </div>
+                        </ul>
+                      ))
+                    ) : (
+                      <p>Không có danh mục con</p>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
+
       <div className={styles.right}>
         <div
           className={styles.account}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Checkbox, Button } from "antd";
-import { login, getUserProfile } from "../../../services/api/authService";
+import { getUserProfile } from "../../../services/api/userService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import PageWrapper from "../../../components/common/layout/PageWrapper";

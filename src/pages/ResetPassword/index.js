@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Input, Button } from "antd";
-import { changePassword } from "../../services/api/authService"; // Ensure this points to your API service
+import { forgotPassword } from "../../services/api/authService"; // Ensure this points to your API service
 import styles from "./ResetPassword.module.scss";
 
 const ResetPassword = () => {
@@ -24,7 +24,7 @@ const ResetPassword = () => {
 
     try {
       const q = email; // Replace with the actual JWT or retrieve it from your context
-      const response = await changePassword({ otp, newPassword, confirmPassword }, q);
+      const response = await forgotPassword({ otp, newPassword, confirmPassword }, q);
       setSuccessMessage("Đặt lại mật khẩu thành công!");
       setErrorMessage(""); // Clear any previous error messages
     } catch (error) {
