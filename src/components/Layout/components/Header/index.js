@@ -4,8 +4,14 @@ import styles from "./Header.module.scss";
 import Tippy from "@tippyjs/react";
 import HeadlessTippy from "@tippyjs/react/headless";
 import Button from "../../../Button";
-import { getParentCategories, getChildrenCategories } from "../../../../services/api/categoryService";
-import { searchProducts, fetchProducts } from "../../../../services/api/productService";
+import {
+  getParentCategories,
+  getChildrenCategories,
+} from "../../../../services/api/categoryService";
+import {
+  searchProducts,
+  fetchProducts,
+} from "../../../../services/api/productService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleXmark,
@@ -70,14 +76,14 @@ function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [subcategories, setSubcategories] = useState({});
-  const [keyword, setKeyword] = useState(''); // State để lưu từ khóa tìm kiếm
+  const [keyword, setKeyword] = useState(""); // State để lưu từ khóa tìm kiếm
   const [products, setProducts] = useState([]); // State để lưu danh sách sản phẩm
   const [page, setPage] = useState(1); // State để quản lý trang
   const limit = 10; // Số sản phẩm hiển thị mỗi trang
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (keyword.trim() === '') {
+      if (keyword.trim() === "") {
         setProducts([]); // Nếu không có từ khóa, reset sản phẩm
         return;
       }
@@ -101,7 +107,6 @@ function Header() {
   const handleInputChange = (e) => {
     setKeyword(e.target.value); // Cập nhật từ khóa khi người dùng nhập
   };
-  
 
   useEffect(() => {
     setCartCount(0);
@@ -149,7 +154,7 @@ function Header() {
             className={styles.input}
             placeholder="Tìm sản phẩm..."
             value={keyword}
-            onChange={handleInputChange} 
+            onChange={handleInputChange}
           />
           <FontAwesomeIcon
             className={styles.iconGlass}
@@ -447,28 +452,39 @@ function Header() {
                 {item.category_name.toUpperCase()}
                 <div className={styles.submenu}>
                   <div className={styles.menu1}>
-                    {/* Hiển thị danh mục con nếu có */}
+                    {/* Mảng tiêu đề cho các cột */}
                     {subcategories[item._id] &&
                     subcategories[item._id].length > 0 ? (
-                      subcategories[item._id].map((subcategory) => (
-                        <ul key={subcategory._id} className={styles.ul1}>
-                          <div className={styles.li1}>
-                            <li className={styles.headerli}>
-                              {subcategory.category_name}
-                            </li>
-                            {/* Hiển thị các mục nhỏ hơn nếu có */}
-                            {subcategory.items &&
-                              subcategory.items.map((subItem) => (
-                                <li key={subItem._id}>
-                                  {subItem.category_name}
-                                </li>
-                              ))}
-                          </div>
-                        </ul>
-                      ))
+                      subcategories[item._id].map((subcategory, index) => {
+                        // Mảng tiêu đề theo thứ tự mong muốn
+                        const titles = [
+                          "Chất liệu",
+                          "Đối tượng",
+                          "Loại",
+                          "Hình",
+                        ];
+
+                        return (
+                          <ul key={subcategory._id} className={styles.ul1}>
+                            <div className={styles.li1}>
+                              {/* Hiển thị tiêu đề cột từ mảng titles */}
+                              <li className={styles.headerli}>
+                                {titles[index]}
+                              </li>
+                              <li>{subcategory.category_name}</li>
+                            </div>
+                          </ul>
+                        );
+                      })
                     ) : (
                       <p>Không có danh mục con</p>
                     )}
+                    <div className={styles.imageContainer}>
+                      <img
+                        src="https://bizweb.dktcdn.net/100/461/213/themes/870653/assets/mega-5-image-2.jpg?1727430576753"
+                        alt="ảnh quà & đồ đôi"
+                      />
+                    </div>
                   </div>
                 </div>
               </li>
