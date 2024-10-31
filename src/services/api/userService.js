@@ -1,11 +1,11 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-const API_URL = "http://localhost:3001/api"; 
+const API_URL = "http://localhost:3000/api"; 
 
 export const getUserProfile = async (email) => {
     try {
-      const response = await axios.get(`${API_URL}/users/profiles/${email}`, {});
-      return response;
+      const response = await axios.get(`${API_URL}/users/profiles/${email}`);
+      return response.data;
     } catch (error) {
       throw error;
     }

@@ -16,6 +16,7 @@ import { DetailProduct } from "../pages/DetailProduct/DetailProduct";
 import ProductList from "../pages/ProductList";
 import VerifyOTP from "../pages/VerifyRegister";
 import ResetPassword from "../pages/ResetPassword";
+import Checkout from "../pages/Checkout";
 
 // không cần đăng nhập vẫn xem được
 const publicRoutes = [
@@ -45,11 +46,12 @@ const publicRoutes = [
     component: AddressesUser,
     layout: DefaultProfile,
   },
-  { path: "/cart", component: CartPage },
+  { path: "/cart/gio-hang-cua-ban", component: CartPage },
   { path: "/otp", component: VerifyRegister },
-  { path: "/detail-product", component: DetailProduct },
+  { path: "/detail-product/:id", component: DetailProduct },
   { path: "/list-product", component: ProductList },
   { path: "/reset-password", component: ResetPassword },
+  { path: "/checkout", component: Checkout, layout: null },
 
 
 ];

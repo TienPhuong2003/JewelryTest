@@ -1,13 +1,15 @@
 // productService.js
-const API_BASE_URL = 'http://localhost:3001/api'; // Thay đổi URL cho đúng
+const API_BASE_URL = "http://localhost:3000/api"; // Thay đổi URL cho đúng
 
 export const fetchProducts = async (limit, page) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/all?limit=${limit}&page=${page}`);
-    
+    const response = await fetch(
+      `${API_BASE_URL}/products/all?limit=${limit}&page=${page}`,
+    );
+
     // Kiểm tra phản hồi từ API
     if (!response.ok) {
-      throw new Error('Yêu cầu không hợp lệ');
+      throw new Error("Yêu cầu không hợp lệ");
     }
 
     const data = await response.json();
@@ -20,11 +22,13 @@ export const fetchProducts = async (limit, page) => {
 
 export const searchProducts = async (keyword, limit, page) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/search?keyword=${encodeURIComponent(keyword)}&limit=${limit}&page=${page}`);
+    const response = await fetch(
+      `${API_BASE_URL}/products/search?keyword=${encodeURIComponent(keyword)}&limit=${limit}&page=${page}`,
+    );
 
     // Kiểm tra phản hồi từ API
     if (!response.ok) {
-      throw new Error('Yêu cầu không hợp lệ');
+      throw new Error("Yêu cầu không hợp lệ");
     }
 
     const data = await response.json();
@@ -32,5 +36,17 @@ export const searchProducts = async (keyword, limit, page) => {
   } catch (error) {
     console.error(error);
     return { error: error.message }; // Trả về thông báo lỗi
+  }
+};
+
+export const getProductDetail = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/detail/${id}`);
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return { error: error.message };
   }
 };

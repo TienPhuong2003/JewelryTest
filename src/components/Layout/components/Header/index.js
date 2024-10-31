@@ -39,7 +39,7 @@ import Menu from "../../../Popper/Menu";
 import "tippy.js/dist/tippy.css";
 import { LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 const MENU_ITEMS = [
@@ -80,6 +80,7 @@ function Header() {
   const [products, setProducts] = useState([]); // State để lưu danh sách sản phẩm
   const [page, setPage] = useState(1); // State để quản lý trang
   const limit = 10; // Số sản phẩm hiển thị mỗi trang
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -111,6 +112,10 @@ function Header() {
   useEffect(() => {
     setCartCount(0);
   }, []);
+
+  const handleCart = () => {
+    navigate("/cart/gio-hang-cua-ban");
+  }
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -518,7 +523,7 @@ function Header() {
         </div>
 
         <div className={styles.box}>
-          <div className={styles.circle}>
+          <div className={styles.circle} onClick={handleCart}>
             <FontAwesomeIcon
               className={styles.iconCart}
               icon={faCartShopping}
@@ -527,7 +532,9 @@ function Header() {
               <span className={styles.cartCount}>{cartCount}</span>
             )}
           </div>
-          <div className={styles.giohang}>Giỏ hàng</div>
+          <div className={styles.giohang} onClick={handleCart}>
+            Giỏ hàng
+          </div>
         </div>
       </div>
     </div>

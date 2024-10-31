@@ -20,24 +20,25 @@ const ProfileUser = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const email = localStorage.getItem("email");
+  const email = localStorage.getItem("userEmail");
 
   console.log(email);
-  
-
   useEffect(() => {
     const fetchProfile = async () => {
+      console.log("Email value:", email); 
       try {
         setLoading(true);
         const data = await getUserProfile(email);
-        setProfileData(data.data);
+        console.log("Response data:", data);
+        setProfileData(data);
       } catch (err) {
+        console.error("Error details:", err);
         setError(err);
       } finally {
         setLoading(false);
       }
     };
-
+  
     if (email) {
       fetchProfile();
     }
@@ -61,8 +62,6 @@ const ProfileUser = () => {
 
   //     console.log("Thông tin profile:", res);
   // };
-  console.log("profileData",profileData);
-  
   return (
     // <PageWrapper
     //   routes={[
