@@ -158,8 +158,6 @@ function Header() {
     fetchMenuItems();
   }, []);
 
-  console.log('menuItems', menuItems);
-
   // useEffect(() => {
   //   const fetchProductDetail = async () => {
   //     const data = await getProductDetail(id);

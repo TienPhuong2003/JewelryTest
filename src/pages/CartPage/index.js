@@ -2,10 +2,16 @@ import React, { useState, useEffect } from "react";
 import styles from "./CartPage.module.scss";
 import cartEmptyImage from "../../icon/cart-empty.png";
 import { Link, useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
+
+  const breadcrumbItems = [
+    { label: "Trang chủ", path: "/" },
+    { label: "Giỏ hàng" },
+  ];
 
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -61,120 +67,132 @@ const CartPage = () => {
   };
 
   return (
-    <div className={styles.wrapper}>
-      <span className={styles.nameCart}>Giỏ hàng của bạn</span>
-      <div className={styles.cart}>
-        <div className={styles.cartLeft}>
-          {cartItems.length === 0 ? (
-            <>
-              <div>
-                <img className={styles.img} src={cartEmptyImage} alt="cart1" />
-              </div>
-              <div className={styles.empty}>
-                Không có sản phẩm nào trong giỏ hàng của bạn
-              </div>
-            </>
-          ) : (
-            <>
-              <div className={styles.top}>
-                <div>Thông tin sản phẩm</div>
-                <div className={styles.pricee}>Đơn giá</div>
-                <div>Số lượng</div>
-                <div>Thành tiền</div>
-              </div>
-              {cartItems.map((item) => (
-                <div key={item.id} className={styles.middle}>
-                  <div className={styles.middleRow}>
-                    <img
-                      className={styles.image}
-                      src={
-                        item.product.product_details.product_images[0]
-                          .secure_url
-                      }
-                      alt={item.product.product_name}
-                    />
-                  </div>
-                  <div className={styles.content}>
-                    <div className={styles.contentLeft}>
-                      <div className={styles.name}>
-                        {item.product.product_name}
-                      </div>
-                      <span className={styles.material}>
-                        {item.product.product_details.color}
-                      </span>
-                      <a
-                        title="Xóa"
-                        className={styles.btn}
-                        onClick={() => handleRemoveItem(item.id)}
-                      >
-                        Xóa
-                      </a>
+    <>
+      <Breadcrumb items={breadcrumbItems} />
+      <div className={styles.wrapper}>
+        <span className={styles.nameCart}>Giỏ hàng của bạn</span>
+        <div className={styles.cart}>
+          <div className={styles.cartLeft}>
+            {cartItems.length === 0 ? (
+              <>
+                <div>
+                  <img
+                    className={styles.img}
+                    src={cartEmptyImage}
+                    alt="cart1"
+                  />
+                </div>
+                <div className={styles.empty}>
+                  Không có sản phẩm nào trong giỏ hàng của bạn
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.top}>
+                  <div>Thông tin sản phẩm</div>
+                  <div className={styles.pricee}>Đơn giá</div>
+                  <div>Số lượng</div>
+                  <div>Thành tiền</div>
+                </div>
+                {cartItems.map((item) => (
+                  <div key={item.id} className={styles.middle}>
+                    <div className={styles.middleRow}>
+                      <img
+                        className={styles.image}
+                        src={
+                          item.product.product_details.product_images[0]
+                            .secure_url
+                        }
+                        alt={item.product.product_name}
+                      />
                     </div>
-                    <div className={styles.contentRight}>
+                    <div className={styles.content}>
+                      <div className={styles.contentLeft}>
+                        <div className={styles.name}>
+                          {item.product.product_name}
+                        </div>
+                        <span className={styles.material}>
+                          {item.product.product_details.color}
+                        </span>
+                        <a
+                          title="Xóa"
+                          className={styles.btn}
+                          onClick={() => handleRemoveItem(item.id)}
+                        >
+                          Xóa
+                        </a>
+                      </div>
+                      <div className={styles.contentRight}>
+                        <div>
+                          <h4 className={styles.price}>
+                            {new Intl.NumberFormat("vi-VN").format(
+                              item.product.product_sale_price ||
+                                item.product.product_price,
+                            )}
+                            <span className={styles.dong}>đ</span>
+                          </h4>
+                        </div>
+                        <div className={styles.quantityControl}>
+                          <button
+                            className={styles.quantityButton}
+                            onClick={() => handleDecrement(item.id)}
+                          >
+                            -
+                          </button>
+                          <span className={styles.quantity}>
+                            {item.quantity}
+                          </span>
+                          <button
+                            className={styles.quantityButton}
+                            onClick={() => handleIncrement(item.id)}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div>
+                          <h4 className={styles.price}>
+                            {new Intl.NumberFormat("vi-VN").format(
+                              (item.product.product_sale_price ||
+                                item.product.product_price) * item.quantity,
+                            )}
+                            <span className={styles.dong}>đ</span>
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <div className={styles.bottom}>
+                  <Link to="/" className={styles.goOn}>
+                    Tiếp tục mua hàng
+                  </Link>
+                  <div className={styles.subTotal}>
+                    <div className={styles.cartSubTotal}>
+                      <div>TỔNG TIỀN: </div>
                       <div>
                         <h4 className={styles.price}>
-                          {new Intl.NumberFormat("vi-VN").format(
-                            item.product.product_sale_price ||
-                              item.product.product_price,
-                          )}
+                          {new Intl.NumberFormat("vi-VN").format(totalAmount)}
                           <span className={styles.dong}>đ</span>
                         </h4>
                       </div>
-                      <div className={styles.quantityControl}>
-                        <button
-                          className={styles.quantityButton}
-                          onClick={() => handleDecrement(item.id)}
-                        >
-                          -
-                        </button>
-                        <span className={styles.quantity}>{item.quantity}</span>
-                        <button
-                          className={styles.quantityButton}
-                          onClick={() => handleIncrement(item.id)}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div>
-                        <h4 className={styles.price}>
-                          {new Intl.NumberFormat("vi-VN").format(
-                            (item.product.product_sale_price ||
-                              item.product.product_price) * item.quantity,
-                          )}
-                          <span className={styles.dong}>đ</span>
-                        </h4>
-                      </div>
+                    </div>
+                    <div
+                      className={styles.btnCheckout}
+                      onClick={handleCheckout}
+                    >
+                      Thanh toán
                     </div>
                   </div>
                 </div>
-              ))}
-              <div className={styles.bottom}>
-                <Link to="/" className={styles.goOn}>
-                  Tiếp tục mua hàng
-                </Link>
-                <div className={styles.subTotal}>
-                  <div className={styles.cartSubTotal}>
-                    <div>TỔNG TIỀN: </div>
-                    <div>
-                      <h4 className={styles.price}>
-                        {new Intl.NumberFormat("vi-VN").format(totalAmount)}
-                        <span className={styles.dong}>đ</span>
-                      </h4>
-                    </div>
-                  </div>
-                  <div className={styles.btnCheckout} onClick={handleCheckout}>
-                    Thanh toán
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-        <div className={styles.cartRight}>
-          <DiscountCard />
+              </>
+            )}
+          </div>
+          <div className={styles.cartRight}>
+            <DiscountCard />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login, requestOTP, sendOTP } from "../../services/api/authService"; // Import các hàm từ service
 import styles from "./Login.module.scss"; // Import SCSS
+import Breadcrumb from '../../components/Breadcrumb';
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -9,6 +10,11 @@ export default function Login() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState(""); // Email cho quên mật khẩu
   const navigate = useNavigate();
+
+  const breadcrumbItems = [
+    { label: 'Trang chủ', path: '/' },
+    { label: 'Đăng nhập' }
+  ];
 
   // Xử lý đăng nhập
   const handleLogin = async (e) => {
@@ -38,69 +44,72 @@ export default function Login() {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <div>
-        <h1>ĐĂNG NHẬP</h1>
-        <form className={styles.loginForm} onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Mật khẩu"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit" className={styles.loginButton}>
-            ĐĂNG NHẬP
-          </button>
-        </form>
-        <div className={styles.forgotPasswordRegister}>
-          <a
-            href="#"
-            className={styles.forgotPassword}
-            onClick={() => setShowForgotPassword(!showForgotPassword)}
-          >
-            Quên mật khẩu?
-          </a>
-          <Link to="/register" className={styles.registerLink}>
-            Đăng ký tại đây
-          </Link>
-        </div>
-        {showForgotPassword && (
-          <div className={styles.forgotPasswordForm}>
+    <>
+      <Breadcrumb items={breadcrumbItems} />
+      <div className={styles.loginContainer}>
+        <div>
+          <h1>ĐĂNG NHẬP</h1>
+          <form className={styles.loginForm} onSubmit={handleLogin}>
             <input
               type="email"
-              placeholder="Nhập email để lấy lại mật khẩu"
+              placeholder="Email"
               required
-              value={forgotEmail}
-              onChange={(e) => setForgotEmail(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <button
-              className={styles.resetPasswordButton}
-              onClick={handleResetPassword}
+            <input
+              type="password"
+              placeholder="Mật khẩu"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit" className={styles.loginButton}>
+              ĐĂNG NHẬP
+            </button>
+          </form>
+          <div className={styles.forgotPasswordRegister}>
+            <a
+              href="#"
+              className={styles.forgotPassword}
+              onClick={() => setShowForgotPassword(!showForgotPassword)}
             >
-              Lấy lại mật khẩu
-            </button>
+              Quên mật khẩu?
+            </a>
+            <Link to="/register" className={styles.registerLink}>
+              Đăng ký tại đây
+            </Link>
           </div>
-        )}
-        <div className={styles.socialLogin}>
-          <p>hoặc đăng nhập qua</p>
-          <div className={styles.socialButtons}>
-            <button className={styles.facebookButton}>
-              <i className="fab fa-facebook-f"></i> Facebook
-            </button>
-            <button className={styles.googleButton}>
-              <i className="fab fa-google"></i> Google
-            </button>
+          {showForgotPassword && (
+            <div className={styles.forgotPasswordForm}>
+              <input
+                type="email"
+                placeholder="Nhập email để lấy lại mật khẩu"
+                required
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+              />
+              <button
+                className={styles.resetPasswordButton}
+                onClick={handleResetPassword}
+              >
+                Lấy lại mật khẩu
+              </button>
+            </div>
+          )}
+          <div className={styles.socialLogin}>
+            <p>hoặc đăng nhập qua</p>
+            <div className={styles.socialButtons}>
+              <button className={styles.facebookButton}>
+                <i className="fab fa-facebook-f"></i> Facebook
+              </button>
+              <button className={styles.googleButton}>
+                <i className="fab fa-google"></i> Google
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

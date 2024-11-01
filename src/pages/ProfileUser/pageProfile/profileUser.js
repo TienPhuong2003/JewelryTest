@@ -8,6 +8,7 @@ import useTranslate from "../../../components/hooks/useTranslate";
 import { commonMessage } from "../../../components/locales/intl";
 import { defineMessages } from "react-intl";
 import styles from "./ProfileUser.module.scss";
+// import Breadcrumb from "../../../components/Breadcrumb";
 
 const messages = defineMessages({
   jewelryTitle: {
@@ -22,10 +23,15 @@ const ProfileUser = () => {
   const [error, setError] = useState(null);
   const email = localStorage.getItem("userEmail");
 
+  // const breadcrumbItems = [
+  //   { label: "Trang chủ", path: "/" },
+  //   { label: "Trang khách hàng" },
+  // ];
+
   console.log(email);
   useEffect(() => {
     const fetchProfile = async () => {
-      console.log("Email value:", email); 
+      console.log("Email value:", email);
       try {
         setLoading(true);
         const data = await getUserProfile(email);
@@ -38,54 +44,33 @@ const ProfileUser = () => {
         setLoading(false);
       }
     };
-  
+
     if (email) {
       fetchProfile();
     }
   }, [email]);
 
-  // const [email, setEmail] = useState('huycuong140203@gmail.com');
-  // const [profileData, setProfileData] = useState('');
-  // const translate = useTranslate();
-
-  // useEffect(() => {
-  //     getProfile();
-  // }, []);
-
-  // const getProfile = async () => {
-  //     const res = await getUserProfile(email);
-  //     if (res) {
-  //       setProfileData(res); // Đảm bảo bạn truy cập đúng vào dữ liệu phản hồi
-  //     }
-  //     // setEmail(res.email);
-  //     console.log(res.email);
-
-  //     console.log("Thông tin profile:", res);
-  // };
   return (
-    // <PageWrapper
-    //   routes={[
-    //     { breadcrumbName: translate.formatMessage(messages.jewelryTitle), path: `/jewelry` },
-    //     ]}
-    // >
-    <div className={styles.profile}>
-      <div className={styles.profileUser}>
-        <span style={{ fontSize: "24px", fontWeight: "300" }}>
-          THÔNG TIN TÀI KHOẢN
-        </span>
-        {profileData && (
-          <div className={styles.user}>
-            <span>
-              Họ tên: {profileData.firstName} {profileData.lastName}
-            </span>
-            <span>Email: {profileData.email}</span>
-            <span>Điện thoại: {profileData.phoneNumber}</span>
-            <span>Địa chỉ: </span>
-          </div>
-        )}
+    <>
+      {/* <Breadcrumb items={breadcrumbItems} /> */}
+      <div className={styles.profile}>
+        <div className={styles.profileUser}>
+          <span style={{ fontSize: "24px", fontWeight: "300" }}>
+            THÔNG TIN TÀI KHOẢN
+          </span>
+          {profileData && (
+            <div className={styles.user}>
+              <span>
+                Họ tên: {profileData.firstName} {profileData.lastName}
+              </span>
+              <span>Email: {profileData.email}</span>
+              <span>Điện thoại: {profileData.phoneNumber}</span>
+              <span>Địa chỉ: </span>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-    // </PageWrapper>
+    </>
   );
 };
 
