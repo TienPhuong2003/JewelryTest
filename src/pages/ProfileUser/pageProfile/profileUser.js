@@ -8,7 +8,7 @@ import useTranslate from "../../../components/hooks/useTranslate";
 import { commonMessage } from "../../../components/locales/intl";
 import { defineMessages } from "react-intl";
 import styles from "./ProfileUser.module.scss";
-// import Breadcrumb from "../../../components/Breadcrumb";
+import Breadcrumb from "../../../components/Breadcrumb";
 
 const messages = defineMessages({
   jewelryTitle: {
@@ -23,10 +23,10 @@ const ProfileUser = () => {
   const [error, setError] = useState(null);
   const email = localStorage.getItem("userEmail");
 
-  // const breadcrumbItems = [
-  //   { label: "Trang chủ", path: "/" },
-  //   { label: "Trang khách hàng" },
-  // ];
+  const breadcrumbItems = [
+    { label: "Trang chủ", path: "/" },
+    { label: "Trang khách hàng" },
+  ];
 
   console.log(email);
   useEffect(() => {
