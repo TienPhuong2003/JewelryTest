@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Form, Input, Button } from "antd";
-import { forgotPassword } from "../../services/api/authService"; // Ensure this points to your API service
+import { Form, Input, Button, notification } from "antd";
+import { forgotPassword } from "../../services/api/authService";
 import styles from "./ResetPassword.module.scss";
+import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
   const [otp, setOtp] = useState("");
@@ -10,12 +11,10 @@ const ResetPassword = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const email = localStorage.getItem("email");
-
-  console.log(email);
-  
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
     if (newPassword !== confirmPassword) {
       setErrorMessage("Mật khẩu mới và xác nhận mật khẩu không khớp.");
@@ -23,13 +22,25 @@ const ResetPassword = () => {
     }
 
     try {
-      const q = email; // Replace with the actual JWT or retrieve it from your context
-      const response = await forgotPassword({ otp, newPassword, confirmPassword }, q);
-      setSuccessMessage("Đặt lại mật khẩu thành công!");
-      setErrorMessage(""); // Clear any previous error messages
+      const q = email;
+      const response = await forgotPassword(
+        { otp, newPassword, confirmPassword },
+        q,
+      );
+      notification.success({
+        message: "Thông báo",
+        description: "Đặt lại mật khẩu thành công",
+        duration: 3,
+      });
+      setSuccessMessage("Đặt lại mật khẩu thành công");
+      setErrorMessage("");
+
+      navigate("/");
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại.");
-      setSuccessMessage(""); // Clear any previous success messages
+      setErrorMessage(
+        error.response?.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại.",
+      );
+      setSuccessMessage("");
     }
   };
 

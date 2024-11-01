@@ -3,6 +3,7 @@ import styles from "./DetailProduct.module.scss";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { getProductDetail } from "../../services/api/productService";
 import { useNavigate, useParams } from "react-router-dom";
+import { notification } from "antd";
 
 export const DetailProduct = () => {
   const [rating, setRating] = useState(0);
@@ -22,21 +23,44 @@ export const DetailProduct = () => {
     fetchProductDetail();
   }, [id]);
 
+  const checkLoginStatus = () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const email = localStorage.getItem("userEmail");
+    return !!(accessToken && email);
+  };
+
   const handleAddToCart = () => {
-    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-    const existingProductIndex = cartItems.findIndex(item => item.id === id);
-    
+    if (!checkLoginStatus()) {
+      notification.error({
+        message: 'Thông báo',
+        description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
+        duration: 3
+      });
+      navigate("/login");
+      return;
+    }
+
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const existingProductIndex = cartItems.findIndex((item) => item.id === id);
+
     if (existingProductIndex !== -1) {
       cartItems[existingProductIndex].quantity += quantity;
     } else {
       cartItems.push({
         id: id,
         product: product.data?.product,
-        quantity: quantity
+        quantity: quantity,
       });
     }
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
     
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    notification.success({
+      message: 'Thông báo',
+      description: 'Thêm vào giỏ hàng thành công',
+      duration: 3
+    });
+
     navigate(`/cart/gio-hang-cua-ban`);
   };
 
@@ -52,7 +76,9 @@ export const DetailProduct = () => {
             <div className={styles.review}>
               <div>
                 <span className={styles.code}>Mã: </span>
-                <span className={styles.codeId}>{product.data?.product?.product_code}</span>
+                <span className={styles.codeId}>
+                  {product.data?.product?.product_code}
+                </span>
               </div>
               <div className={styles.rating}>
                 {[1, 2, 3, 4, 5].map((index) => (
@@ -69,12 +95,14 @@ export const DetailProduct = () => {
             <form>
               <div className={styles.priceProduct}>
                 <h4 className={styles.price}>
-                  {product.data?.product?.product_sale_price < product.data?.product?.product_price && product.data?.product?.product_sale_price
+                  {product.data?.product?.product_sale_price <
+                    product.data?.product?.product_price &&
+                  product.data?.product?.product_sale_price
                     ? new Intl.NumberFormat("vi-VN").format(
-                        product.data?.product?.product_sale_price
+                        product.data?.product?.product_sale_price,
                       )
                     : new Intl.NumberFormat("vi-VN").format(
-                        product.data?.product?.product_price
+                        product.data?.product?.product_price,
                       )}
                   <span className={styles.dong}>đ</span>
                 </h4>
@@ -114,10 +142,17 @@ export const DetailProduct = () => {
                   </button>
                 </div>
                 <div>
-                  <button type="button" className={styles.btn} onClick={handleAddToCart}>
+                  <button
+                    type="button"
+                    className={styles.btn}
+                    onClick={handleAddToCart}
+                  >
                     <h1 className={styles.titleBtn}>Thêm vào giỏ hàng</h1>
                   </button>
-                  <button type="button" className={`${styles.btn} ${styles.chatBtn}`}>
+                  <button
+                    type="button"
+                    className={`${styles.btn} ${styles.chatBtn}`}
+                  >
                     <h1 style={{ color: "black" }} className={styles.titleBtn}>
                       Chat tư vấn
                     </h1>
@@ -134,7 +169,11 @@ export const DetailProduct = () => {
       <div className={styles.right}>
         <div className={styles.couponBox}>
           <div className={styles.couponTitle}>
-            <img src="//bizweb.dktcdn.net/100/461/213/themes/870653/assets/code_dis.gif?1729756726879" alt="gift" className={styles.giftIcon} />
+            <img
+              src="//bizweb.dktcdn.net/100/461/213/themes/870653/assets/code_dis.gif?1729756726879"
+              alt="gift"
+              className={styles.giftIcon}
+            />
             <span>MÃ GIẢM GIÁ</span>
           </div>
           <div className={styles.couponItem}>
@@ -148,7 +187,9 @@ export const DetailProduct = () => {
           <div className={styles.couponItem}>
             <div className={styles.couponInfo}>
               <div className={styles.discount}>FREESHIP</div>
-              <div className={styles.condition}>Miễn Phí Vận Chuyển Đơn {'>'} 950k</div>
+              <div className={styles.condition}>
+                Miễn Phí Vận Chuyển Đơn {">"} 950k
+              </div>
               <div className={styles.code}>FREESHIP950K</div>
             </div>
             <button className={styles.copyBtn}>Copy</button>
@@ -161,10 +202,11 @@ export const DetailProduct = () => {
 
 export const Image = ({ product }) => {
   const [mainImage, setMainImage] = useState(
-    product?.product_details?.product_images[0]?.secure_url || ""
+    product?.product_details?.product_images[0]?.secure_url || "",
   );
 
-  const images = product?.product_details?.product_images.map(img => img.secure_url) || [];
+  const images =
+    product?.product_details?.product_images.map((img) => img.secure_url) || [];
 
   useEffect(() => {
     if (product?.product_details?.product_images[0]?.secure_url) {
@@ -199,7 +241,9 @@ export const DescProduct = ({ product }) => {
       </div>
 
       <div className={styles.specTable}>
-        <h3 className={styles.specTitle}>THÔNG SỐ THIẾT KẾ - {product?.product_code}</h3>
+        <h3 className={styles.specTitle}>
+          THÔNG SỐ THIẾT KẾ - {product?.product_code}
+        </h3>
         <table>
           <tbody>
             <tr>

@@ -39,6 +39,8 @@
         margin-top: 10px;
         background-color: transparent;
         width: 100%;
+        border: 1px solid transparent !important;
+        font-size: 12px;
       }
 
       .iconGlass {
@@ -156,14 +158,14 @@
           color: #aab1b0;
           margin-bottom: 70px;
           font-weight: 400;
-          font-size: 16px; 
+          font-size: 16px;
         }
         .li5 {
           line-height: 5px;
           color: #aab1b0;
           margin-bottom: 20px;
           font-weight: 400;
-          font-size: 16px; 
+          font-size: 16px;
         }
       }
       .ul4 {
@@ -181,10 +183,10 @@
       .imageContainer img {
         width: 465px;
         height: 190px;
-        margin-left: 120px; 
+        margin-left: 120px;
         margin-top: 40px;
       }
-      
+
       .headerli {
         color: black;
         border-bottom: 1px solid #ccc;
@@ -207,7 +209,7 @@
       height: 58px;
       padding-left: 60px;
 
-      .dropdownMenu{
+      .dropdownMenu {
         display: flex;
         position: absolute;
         justify-content: center;
@@ -221,8 +223,7 @@
         background-color: #ffffff;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 
-        .dropdownItem{
-          
+        .dropdownItem {
         }
       }
 
@@ -257,6 +258,20 @@
         font-size: 10px;
         text-transform: uppercase;
         cursor: pointer;
+      }
+
+      .dropDownMenuCart {
+        background-color: #ffffff;
+        width: 140px;
+        height: 30px;
+        margin-left: -80px;
+        padding-top: 3px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        .menuCart {
+          
+          margin-top: 10px;
+        }
       }
 
       .iconCart {

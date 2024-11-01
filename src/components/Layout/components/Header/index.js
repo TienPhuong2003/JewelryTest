@@ -11,6 +11,7 @@ import {
 import {
   searchProducts,
   fetchProducts,
+  getProductDetail,
 } from "../../../../services/api/productService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -37,9 +38,13 @@ import { Wrapper as PopperWrapper } from "../../../Popper";
 import AccountItem from "../../../AccountItem";
 import Menu from "../../../Popper/Menu";
 import "tippy.js/dist/tippy.css";
-import { LoginOutlined, LogoutOutlined } from "@ant-design/icons";
+import {
+  LoginOutlined,
+  LogoutOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 const MENU_ITEMS = [
@@ -74,6 +79,7 @@ const MENU_ITEMS = [
 function Header() {
   const [cartCount, setCartCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showCartDropdown, setShowCartDropdown] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [subcategories, setSubcategories] = useState({});
   const [keyword, setKeyword] = useState(""); // State để lưu từ khóa tìm kiếm
@@ -81,6 +87,24 @@ function Header() {
   const [page, setPage] = useState(1); // State để quản lý trang
   const limit = 10; // Số sản phẩm hiển thị mỗi trang
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [cartItems, setCartItems] = useState([]);
+  const { id } = useParams();
+  const [product, setProduct] = useState({});
+
+  useEffect(() => {
+    // Kiểm tra trạng thái đăng nhập khi component được mount
+    const accessToken = localStorage.getItem("accessToken");
+    const email = localStorage.getItem("userEmail");
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (accessToken && email) {
+      setIsLoggedIn(true);
+      setUserEmail(email);
+    }
+    setCartItems(cart);
+    setCartCount(cart.length);
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -94,7 +118,7 @@ function Header() {
       if (result.error) {
         console.error("Lỗi khi tìm kiếm sản phẩm:", result.error);
       } else {
-        setProducts(result.products); // Lưu danh sách sản phẩm vào state
+        setProducts(result.products); 
       }
     };
 
@@ -106,22 +130,26 @@ function Header() {
   }, [keyword, page]); // Chạy khi từ khóa hoặc trang thay đổi
 
   const handleInputChange = (e) => {
-    setKeyword(e.target.value); // Cập nhật từ khóa khi người dùng nhập
+    setKeyword(e.target.value); 
   };
 
-  useEffect(() => {
-    setCartCount(0);
-  }, []);
+  // useEffect(() => {
+  //   setCartCount(0);
+  // }, []);
 
   const handleCart = () => {
     navigate("/cart/gio-hang-cua-ban");
-  }
+  };
+
+  const handleSubcategoryClick = (menuItem) => {
+    navigate(`/detail-product/${menuItem}`);
+  };
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
         const categories = await getParentCategories();
-        setMenuItems(categories); // Lưu danh mục cha từ API vào state
+        setMenuItems(categories); 
       } catch (error) {
         console.error("Lỗi khi lấy danh mục:", error);
       }
@@ -129,6 +157,17 @@ function Header() {
 
     fetchMenuItems();
   }, []);
+
+  console.log('menuItems', menuItems);
+
+  // useEffect(() => {
+  //   const fetchProductDetail = async () => {
+  //     const data = await getProductDetail(id);
+  //     setProduct(data);
+  //   };
+  //   fetchProductDetail();
+  // }, [id]);
+
 
   const handleMouseEnter = async (parentId) => {
     try {
@@ -476,7 +515,13 @@ function Header() {
                               <li className={styles.headerli}>
                                 {titles[index]}
                               </li>
-                              <li>{subcategory.category_name}</li>
+                              <li
+                                onClick={() =>
+                                  handleSubcategoryClick(subcategory._id)
+                                }
+                              >
+                                {subcategory.category_name}
+                              </li>
                             </div>
                           </ul>
                         );
@@ -510,19 +555,51 @@ function Header() {
           <div className={styles.taikhoan}>Tài khoản</div>
           {showDropdown && (
             <div className={styles.dropdownMenu}>
-              <Link to="/login" className={styles.dropdownItem}>
-                <LoginOutlined style={{ marginRight: "10px" }} />
-                Đăng nhập
-              </Link>
-              <Link to="/register" className={styles.dropdownItem}>
-                <LogoutOutlined style={{ marginRight: "25px" }} />
-                Đăng ký
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link to="/account" className={styles.dropdownItem}>
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: "10px" }}
+                    />
+                    Tài khoản
+                  </Link>
+                  <div
+                    style={{ cursor: "pointer" }}
+                    className={styles.dropdownItem}
+                    onClick={() => {
+                      localStorage.clear();
+                      setIsLoggedIn(false);
+                      setUserEmail("");
+                      setCartCount(0);
+                      navigate("/");
+                    }}
+                  >
+                    <LogoutOutlined style={{ marginRight: "10px" }} />
+                    Đăng xuất
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className={styles.dropdownItem}>
+                    <LoginOutlined style={{ marginRight: "10px" }} />
+                    Đăng nhập
+                  </Link>
+                  <Link to="/register" className={styles.dropdownItem}>
+                    <LogoutOutlined style={{ marginRight: "25px" }} />
+                    Đăng ký
+                  </Link>
+                </>
+              )}
             </div>
           )}
         </div>
 
-        <div className={styles.box}>
+        <div
+          className={styles.box}
+          onMouseEnter={() => setShowCartDropdown(true)}
+          onMouseLeave={() => setShowCartDropdown(false)}
+        >
           <div className={styles.circle} onClick={handleCart}>
             <FontAwesomeIcon
               className={styles.iconCart}
@@ -535,6 +612,36 @@ function Header() {
           <div className={styles.giohang} onClick={handleCart}>
             Giỏ hàng
           </div>
+          {showCartDropdown && (
+            <div className={styles.cartDropdownMenu}>
+              {cartItems.length > 0 ? (
+                cartItems.map((item, index) => (
+                  <div key={index} className={styles.cartItem}>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className={styles.cartItemImage}
+                    />
+                    <div className={styles.cartItemDetails}>
+                      <div className={styles.cartItemName}>{item.name}</div>
+                      <div className={styles.cartItemPrice}>{item.price}</div>
+                      <div className={styles.cartItemQuantity}>
+                        Số lượng: {item.quantity}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
+              <div className={styles.dropDownMenuCart}>
+                <ShoppingCartOutlined style={{ marginRight: "10px" }} />
+                <Link to="/cart/gio-hang-cua-ban" className={styles.menuCart}>
+                  Xem giỏ hàng
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
