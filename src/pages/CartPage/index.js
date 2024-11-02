@@ -45,13 +45,12 @@ const CartPage = () => {
   };
 
   const handleRemoveItem = (itemId) => {
-    // Xóa item khỏi state
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-
-    // Xóa item khỏi localStorage
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    const updatedCart = cartItems.filter((item) => item.id !== itemId);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    // Xóa item khỏi state và localStorage
+    setCartItems((prevItems) => {
+      const updatedItems = prevItems.filter((item) => item.id !== itemId);
+      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+      return updatedItems;
+    });
   };
 
   const totalAmount = cartItems.reduce((total, item) => {
@@ -89,13 +88,13 @@ const CartPage = () => {
             ) : (
               <>
                 <div className={styles.top}>
-                  <div>Thông tin sản phẩm</div>
-                  <div className={styles.pricee}>Đơn giá</div>
-                  <div>Số lượng</div>
-                  <div>Thành tiền</div>
+                  <div style={{fontWeight: "500"}}>Thông tin sản phẩm</div>
+                  <div style={{fontWeight: "500"}} className={styles.pricee}>Đơn giá</div>
+                  <div style={{fontWeight: "500"}}>Số lượng</div>
+                  <div style={{fontWeight: "500"}}>Thành tiền</div>
                 </div>
                 {cartItems.map((item) => (
-                  <div key={item.id} className={styles.middle}>
+                  <div key={item.id} className={styles.middle}> 
                     <div className={styles.middleRow}>
                       <img
                         className={styles.image}

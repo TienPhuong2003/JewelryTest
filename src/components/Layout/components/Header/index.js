@@ -584,7 +584,7 @@ function Header() {
                     Đăng nhập
                   </Link>
                   <Link to="/register" className={styles.dropdownItem}>
-                    <LogoutOutlined style={{ marginRight: "25px" }} />
+                    <LogoutOutlined style={{ marginRight: "29px" }} />
                     Đăng ký
                   </Link>
                 </>
