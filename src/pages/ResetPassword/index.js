@@ -49,7 +49,7 @@ const ResetPassword = () => {
       <div className={styles.profileUser}>
         <span
           className={styles.changePassword}
-          style={{ fontSize: "24px", fontWeight: "300" }}
+          style={{ fontSize: "24px", fontWeight: "500" }}
         >
           ĐỔI MẬT KHẨU
         </span>
@@ -57,14 +57,14 @@ const ResetPassword = () => {
         {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         <form onSubmit={handleSubmit}>
           <span
-            style={{ fontSize: "14px", fontWeight: "400", color: "#0a0000" }}
+            style={{ fontSize: "13px", fontWeight: "400", color: "#0a0000" }}
           >
             <strong>Lưu ý:</strong> Để đảm bảo tính bảo mật bạn vui lòng đặt lại
             mật khẩu với ít nhất 8 kí tự
           </span>
-          <div style={{ marginBottom: "15px" }}>
+          <div style={{ marginBottom: "15px", fontWeight: "500" }}>
             <Form.Item>
-              OTP
+              OTP *
               <Input
                 type="text"
                 value={otp}
@@ -74,7 +74,7 @@ const ResetPassword = () => {
               />
             </Form.Item>
           </div>
-          <div style={{ marginBottom: "15px" }}>
+          <div style={{ marginBottom: "15px", fontWeight: "500" }}>
             <Form.Item>
               Mật khẩu mới *
               <Input
@@ -86,7 +86,7 @@ const ResetPassword = () => {
               />
             </Form.Item>
           </div>
-          <div style={{ marginBottom: "15px" }}>
+          <div style={{ marginBottom: "15px", fontWeight: "500" }}>
             <Form.Item>
               Xác nhận lại mật khẩu *
               <Input
