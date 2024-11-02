@@ -213,6 +213,8 @@ router.post("/", paymentController.confirmInforPayment);
  */
 router.post("/create", paymentController.createPayment);
 
+
+
 module.exports = router;
 
 /*Khi người dùng chọn thanh toán qua VNPay và bấm nút "Đặt hàng" hoặc "Thanh toán," bạn cần thực hiện các bước sau để hoàn thiện luồng thanh toán qua VNPay:

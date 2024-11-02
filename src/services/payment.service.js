@@ -221,13 +221,10 @@ const handleVnPayPayment = async (newInvoice) => {
         // Thực hiện thanh toán VNPay
         const vnpayResponse = await vnpayService.processPayment(newInvoice);
 
-        // Kiểm tra kết quả thanh toán
         if (vnpayResponse) {
-            // Tạo hóa đơn nếu thanh toán thành công
-            
-
-            // Trả về thông tin hóa đơn đã tạo
+         
             return {
+          
                 vnpayResponse,
                 invoice: newInvoice
             };
