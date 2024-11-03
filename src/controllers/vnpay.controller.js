@@ -4,7 +4,6 @@ const vnpayIpn = async (req, res) => {
     try {
         const params = req.query; // hoặc req.body nếu bạn sử dụng POST
         const response = await paymentService.processVnpayIpn(params);
-        console.log(params)
         // Kiểm tra mã phản hồi và gửi mã trạng thái hợp lệ
         if (response.RspCode === "00") {
             return res.status(200).json(response); // Trả về mã 200 cho thành công

@@ -90,8 +90,6 @@ const processPayment = async (paymentData) => {
     try {
         const {
             email,
-            name,
-            phoneNumber,
             address, // Đây là ID của địa chỉ đã chọn
             otherAddress,
             paymentMethod,
@@ -120,10 +118,10 @@ const processPayment = async (paymentData) => {
         // 3. Thêm `otherAddress` vào danh sách địa chỉ của người dùng nếu `otherAddress` có giá trị
         if (otherAddress) {
             const newAddress = new Address({
-                country: otherAddress.country || "",
-                city: otherAddress.city || "",
-                district: otherAddress.district || "",
-                addressLine: otherAddress.addressLine || ""
+                country: otherAddress.country ,
+                city: otherAddress.city ,
+                district: otherAddress.district ,
+                addressLine: otherAddress.addressLine 
             });
             await newAddress.save();
 
@@ -220,11 +218,8 @@ const handleVnPayPayment = async (newInvoice) => {
     try {
         // Thực hiện thanh toán VNPay
         const vnpayResponse = await vnpayService.processPayment(newInvoice);
-
         if (vnpayResponse) {
-         
             return {
-          
                 vnpayResponse,
                 invoice: newInvoice
             };
