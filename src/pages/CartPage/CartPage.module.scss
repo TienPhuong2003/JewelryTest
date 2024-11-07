@@ -261,13 +261,11 @@
     }
 
     .cartRight {
-      margin-top: 40px;
+      margin-top: 5px;
       background: #fff;
       border-radius: 5px;
-      margin-bottom: 350px;
       margin-left: 20px;
       padding: 12px;
-      border: 1px dashed #01567f;
       background: rgba(1, 86, 127, 0.02);
 
       .discountCard {
@@ -335,6 +333,7 @@
         border-radius: 4px;
         padding: 4px 8px;
         cursor: pointer;
+        margin-left: 10px;
       }
 
       .copyButton:hover {

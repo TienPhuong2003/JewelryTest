@@ -3,6 +3,8 @@ import styles from "./CartPage.module.scss";
 import cartEmptyImage from "../../icon/cart-empty.png";
 import { Link, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb";
+import { fetchDiscounts } from "../../services/api/discountService";
+import { fetchPayment } from "../../services/api/checkoutService";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -61,8 +63,32 @@ const CartPage = () => {
     );
   }, 0);
 
-  const handleCheckout = () => {
-    navigate("/checkout");
+  const [paymentData, setPaymentData] = useState([]);
+  // const email = localStorage.getItem("userEmail");
+
+  const [discount_id, setDiscount_id] = useState(null);
+
+  const handleCheckout = async () => {
+    try {
+      const emailtoken = localStorage.getItem("userEmail");
+      const items = cartItems.map(item => ({
+        product_id: item?.id,
+        quantity: item.quantity
+      }));
+
+      const response = await fetchPayment({ emailtoken, items, discount_id });
+
+      if (response.error) {
+        console.error("Lỗi khi lấy dữ liệu thanh toán:", response.error);
+        return;
+      }
+      setPaymentData(response);
+      console.log("Dữ liệu thanh toán:", response);
+
+      navigate("/checkout", { state: { cartItems, emailtoken, paymentData: response } });
+    } catch (error) {
+      console.error("Lỗi không mong muốn:", error);
+    }
   };
 
   return (
@@ -88,13 +114,15 @@ const CartPage = () => {
             ) : (
               <>
                 <div className={styles.top}>
-                  <div style={{fontWeight: "500"}}>Thông tin sản phẩm</div>
-                  <div style={{fontWeight: "500"}} className={styles.pricee}>Đơn giá</div>
-                  <div style={{fontWeight: "500"}}>Số lượng</div>
-                  <div style={{fontWeight: "500"}}>Thành tiền</div>
+                  <div style={{ fontWeight: "500" }}>Thông tin sản phẩm</div>
+                  <div style={{ fontWeight: "500" }} className={styles.pricee}>
+                    Đơn giá
+                  </div>
+                  <div style={{ fontWeight: "500" }}>Số lượng</div>
+                  <div style={{ fontWeight: "500" }}>Thành tiền</div>
                 </div>
                 {cartItems.map((item) => (
-                  <div key={item.id} className={styles.middle}> 
+                  <div key={item.id} className={styles.middle}>
                     <div className={styles.middleRow}>
                       <img
                         className={styles.image}
@@ -187,7 +215,7 @@ const CartPage = () => {
             )}
           </div>
           <div className={styles.cartRight}>
-            <DiscountCard />
+            <DiscountCard totalAmount={totalAmount} setDiscount_id={setDiscount_id} />
           </div>
         </div>
       </div>
@@ -195,7 +223,33 @@ const CartPage = () => {
   );
 };
 
-const DiscountCard = () => {
+const DiscountCard = ({ totalAmount ,setDiscount_id }) => {
+  const [showDiscounts, setShowDiscounts] = useState(false);
+  const [discountData, setDiscountData] = useState([]);
+
+  const fetchDiscount = async () => {
+    try {
+      const response = await fetchDiscounts({ totalPrice: totalAmount });
+
+      if (response.error) {
+        console.error("Lỗi khi lấy dữ liệu giảm giá:", response.error);
+        return;
+      }
+      setDiscountData(response);
+    } catch (error) {
+      console.error("Lỗi không mong muốn:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDiscount();
+  }, [totalAmount]);
+
+  const toggleDiscounts = () => {
+    setShowDiscounts(!showDiscounts);
+    fetchDiscount();
+  };
+
   return (
     <div className={styles.discountCard}>
       <div className={styles.discountCardHeader}>
@@ -203,30 +257,49 @@ const DiscountCard = () => {
           src="//bizweb.dktcdn.net/100/461/213/themes/870653/assets/code_dis.gif?1729756726879"
           alt="Gift Icon"
         />
-        <h3>MÃ GIẢM GIÁ</h3>
+        <button
+          style={{
+            backgroundColor: "#000",
+            color: "#fff",
+            borderRadius: "5px",
+            padding: "5px 10px",
+            width: "100%",
+          }}
+          onClick={toggleDiscounts}
+        >
+          MÃ GIẢM GIÁ
+        </button>
       </div>
-      <div className={styles.discountCardContent}>
-        <div className={styles.discountItem}>
-          <div className={styles.discountTitle}>GIẢM 10%</div>
-          <div className={styles.discountCodeContainer}>
-            <div className={styles.discountCode}>
-              <span>Top Code</span>
-              <span>MUA2GIAM10</span>
-              <button className={styles.copyButton}>Copy</button>
+      {showDiscounts && (
+        <div className={styles.discountCardContent}>
+          {discountData.map((discount, index) => (
+            <div key={index} className={styles.discountItem}>
+              <div className={styles.discountTitle}>
+                Giảm {new Intl.NumberFormat("vi-VN").format(
+                  discount.discountAmount,
+                )}
+                {discount.discountType === "percent" ? "%" : "đ"}
+              </div>
+              <div className={styles.discountCodeContainer}>
+                <div className={styles.discountCode}>
+                  <input 
+                    type="radio"
+                    id={`discount-${index}`}
+                    name="discount"
+                    value={discount.code}
+                    style={{marginRight: '10px', marginTop: '10px'}}
+                    onChange={() => setDiscount_id(discount._id)}
+                  />
+                  <span>Top Code</span>
+                  <span>{discount.code}</span>
+                  <span>{discount.name}</span>
+                  <button className={styles.copyButton}>Áp dụng</button>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-        <div className={styles.discountItem}>
-          <div className={styles.discountTitle}>FREESHIP</div>
-          <div className={styles.discountCodeContainer}>
-            <div className={styles.discountCode}>
-              <span>Top Code</span>
-              <span>FREESHIP950K</span>
-              <button className={styles.copyButton}>Copy</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

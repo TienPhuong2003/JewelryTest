@@ -20,13 +20,22 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const { userEmail, accessToken } = await login(email, password); // Gọi API đăng nhập
+      const { userEmail, accessToken, decodedToken } = await login(email, password); // Gọi API đăng nhập
       console.log("Đăng nhập thành công:", accessToken);
       setEmail(userEmail);
-      // Lưu thông tin người dùng và điều hướng đến trang chủ (hoặc trang khác)
-      localStorage.setItem("userEmail", userEmail);
-      localStorage.setItem("accessToken",accessToken);
-      navigate("/account", { state: { email: userEmail } });
+      // localStorage.setItem("userEmail", userEmail);
+      // localStorage.setItem("accessToken",accessToken);
+      if (decodedToken === "user") {
+        localStorage.setItem("userEmail", userEmail);
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("decodedToken", decodedToken);
+        navigate("/account", { state: { email: userEmail } });
+      } else if (decodedToken === "admin") {
+        localStorage.setItem("decodedToken", decodedToken);
+        navigate("/admin");
+      } else {
+        navigate("/login"); 
+      }
     } catch (error) {
       alert(error.message);
     }
