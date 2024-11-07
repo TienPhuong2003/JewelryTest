@@ -18,6 +18,16 @@ import VerifyOTP from "../pages/VerifyRegister";
 import ResetPassword from "../pages/ResetPassword";
 import Checkout from "../pages/Checkout";
 
+// Middleware để kiểm tra đăng nhập
+function requireAuth(to, from, next) {
+  const token = localStorage.getItem('decodedToken');
+  if (token === 'user') {
+    next(); // Cho phép truy cập
+  } else {
+    next('/login'); // Chuyển hướng đến trang đăng nhập
+  }
+}
+
 // không cần đăng nhập vẫn xem được
 const publicRoutes = [
   { path: "/", component: Home },
@@ -26,15 +36,11 @@ const publicRoutes = [
   { path: "/login", component: Login },
   { path: "/search", component: Search, layout: null },
   { path: "/upload", component: Upload, layout: HeaderOnly },
-  {
-    path: "/account",
-    component: ProfileUser,
-    layout: DefaultProfile,
-    // children: [
-    //     { path: '/cartUser', component: CartUser, layout: DefaultProfile },
-    //     // { path: 'other-tab', element: <OtherTab /> },
-    // ]
-  },
+  // {
+  //   path: "/account",
+  //   component: ProfileUser,
+  //   layout: DefaultProfile
+  // },
   { path: "/account/orders", component: CartUser, layout: DefaultProfile },
   {
     path: "/account/changepassword",
@@ -57,6 +63,11 @@ const publicRoutes = [
 ];
 
 // ví dụ phải đăng nhập mới xem được
-const privateRoutes = [];
+const privateRoutes = [
+  { path: "/account", component: ProfileUser, layout: DefaultProfile, beforeEnter: requireAuth },
+  { path: "/account/orders", component: CartUser, layout: DefaultProfile, beforeEnter: requireAuth },
+  { path: "/account/changepassword", component: PasswordUser, layout: DefaultProfile, beforeEnter: requireAuth },
+  { path: "/account/addresses", component: AddressesUser, layout: DefaultProfile, beforeEnter: requireAuth },
+];
 
 export { publicRoutes, privateRoutes };

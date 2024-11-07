@@ -35,15 +35,13 @@ export const login = async (email, password) => {
       password,
     });
     const accessToken = response.data.accessToken;
-    console.log("Access Token:", accessToken);
     // Giải mã accessToken để lấy thông tin người dùng
-    const decodedToken = jwtDecode(accessToken);
-    console.log(decodedToken);
+    const decodedToken = jwtDecode(accessToken).role;
+    console.log("decodedToken", decodedToken);
 
     // Lấy email từ decodedToken
     const userEmail = jwtDecode(accessToken).email;
-    console.log("User email:", userEmail);
-    return { accessToken, userEmail };
+    return { accessToken, userEmail, decodedToken };
   } catch (error) {
     const errorMessage = error.response?.data || 'Có lỗi xảy ra, vui lòng thử lại!';
     console.error("Error:", errorMessage);

@@ -1,9 +1,20 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Checkout.module.scss";
 
 const Checkout = () => {
-  const [shippingInfo, setShippingInfo] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { cartItems, emailtoken, paymentData } = location.state || {};
+  const paymentDataArray = Object.values(paymentData);
+  const [shippingInfo, setShippingInfo] = useState({
+    email: emailtoken || "",
+    name: "",
+    phone: "",
+    streetNumber: "",
+    province: "",
+    note: "",
+  });
 
   const [paymentMethod, setPaymentMethod] = useState("COD");
 
@@ -15,12 +26,34 @@ const Checkout = () => {
 
   const [showCODDetails, setShowCODDetails] = useState(false);
 
+  useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    if (email) {
+      setShippingInfo((prev) => ({
+        ...prev,
+        email: email,
+      }));
+    }
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setShippingInfo((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  console.log("paymentDataArray length:", paymentDataArray.length);
+  console.log("paymentDataArray", paymentDataArray);
+
+  const data = paymentDataArray[2];
+
+  const addresses = data?.user?.user_profile?.profile_addresses || [];
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
   };
 
   return (
@@ -37,58 +70,59 @@ const Checkout = () => {
           <div className={styles.leftSection}>
             <div className={styles.headerSection}>
               <h2>Thông tin mua hàng</h2>
-              <Link to="/login" className={styles.loginLink}>
+              <button onClick={handleLogout} className={styles.loginLink}>
                 Đăng xuất
-              </Link>
+              </button>
             </div>
 
             <form className={styles.shippingForm}>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={shippingInfo.email}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="name"
-                placeholder="Họ và tên"
-                value={shippingInfo.name}
-                onChange={handleInputChange}
-              />
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Số điện thoại"
-                value={shippingInfo.phone}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="streetNumber"
-                placeholder="Địa chỉ"
-                value={shippingInfo.streetNumber}
-                onChange={handleInputChange}
-              />
-              <select
-                name="province"
-                value={shippingInfo.province}
-                onChange={handleInputChange}
-              >
-                <option value="TP Hồ Chí Minh">TP Hồ Chí Minh</option>
-                <option value="TP Hà nội">TP Hà nội</option>
-                <option value="Tiền Giang">Tiền Giang</option>
-                <option value="TP Đà Lạt">TP Đà Lạt</option>
-                <option value="TP Đà Nẵng">TP Đà Nẵng</option>
-                <option value="Cao Bằng">Cao Bằng</option>
-              </select>
-              <textarea
-                name="note"
-                placeholder="Ghi chú (tùy chọn)"
-                value={shippingInfo.note}
-                onChange={handleInputChange}
-              />
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={shippingInfo.email}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Họ và tên"
+                  value={
+                    data?.user?.user_profile?.firstName +
+                    " " +
+                    data?.user?.user_profile?.lastName
+                  }
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Số điện thoại"
+                  value={data?.user?.user_profile?.phoneNumber}
+                  onChange={handleInputChange}
+                />
+                <select
+                  name="streetNumber"
+                  value={shippingInfo.streetNumber}
+                  onChange={handleInputChange}
+                >
+                  {addresses.map((address, index) => (
+                    <option
+                      key={index}
+                      value={`${address.addressLine}, ${address.city}, ${address.country}`}
+                    >
+                      {`${address.addressLine}, ${address.city}, ${address.country}`}
+                    </option>
+                  ))}
+                </select>
+                <textarea
+                  name="note"
+                  placeholder="Ghi chú (tùy chọn)"
+                  value={shippingInfo.note}
+                  onChange={handleInputChange}
+                />
+              </div>
             </form>
           </div>
 
@@ -136,7 +170,7 @@ const Checkout = () => {
                     </p>
                     <ul>
                       <li>Trả sau 12 tháng cho đơn hàng lên đến 100 triệu</li>
-                      <li>Trả sau 9 tháng cho đơn hàng lên đến 100 triệu</li>
+                      <li>Trả sau 9 tháng cho đơn hàng lên đến 100 tri���u</li>
                       <li>Trả sau 6 tháng cho đơn hàng lên đến 100 triệu</li>
                     </ul>
                     <p>Ưu đãi:</p>
@@ -254,7 +288,10 @@ const Checkout = () => {
 
                 {showCODDetails && paymentMethod === "COD" && (
                   <div className={styles.codDetails}>
-                    <p>Bạn có thể nhận hàng và kiểm tra hàng rồi thanh toán 100% giá trị đơn hàng cho đơn vị vận chuyển.</p>
+                    <p>
+                      Bạn có thể nhận hàng và kiểm tra hàng rồi thanh toán 100%
+                      giá trị đơn hàng cho đơn vị vận chuyển.
+                    </p>
                   </div>
                 )}
               </div>
@@ -263,21 +300,25 @@ const Checkout = () => {
         </div>
 
         <div className={styles.orderSummary}>
-          <h3>Đơn hàng (1 sản phẩm)</h3>
-          <div className={styles.productItem}>
-            <img
-              src="//bizweb.dktcdn.net/thumb/compact/100/461/213/products/vyn13-t-2-1659674330751.jpg"
-              alt="product"
-            />
-            <div className={styles.productInfo}>
-              <p>
-                Dây Chuyền Bạc 925 Vương Miện Đá Nhảy Hàn Quốc My Queen - Mặt
-                Tròn Vương Miện - VYN13
-              </p>
-              <span>Vàng</span>
+          <h3>Đơn hàng ({cartItems?.length || 0} sản phẩm)</h3>
+          {cartItems?.map((item) => (
+            <div key={item.id} className={styles.productItem}>
+              <img
+                src={item.product.product_details.product_images[0].secure_url}
+                alt={item.product.product_name}
+              />
+              <div className={styles.productInfo}>
+                <p>{item.product.product_name}</p>
+                <span>{item.product.product_details.color}</span>
+              </div>
+              <div className={styles.productPrice}>
+                {new Intl.NumberFormat("vi-VN").format(
+                  item.product.product_sale_price || item.product.product_price,
+                )}
+                đ
+              </div>
             </div>
-            <div className={styles.productPrice}>1.290.000đ</div>
-          </div>
+          ))}
 
           <div className={styles.couponSection}>
             <input type="text" placeholder="Nhập mã giảm giá" />
@@ -287,15 +328,31 @@ const Checkout = () => {
           <div className={styles.orderTotal}>
             <div className={styles.subtotal}>
               <span>Tạm tính</span>
-              <span>1.290.000đ</span>
+              {new Intl.NumberFormat("vi-VN").format(
+                data?.totalAmountBeforeDiscount,
+              )}
+              đ
             </div>
             <div className={styles.shipping}>
               <span>Phí vận chuyển</span>
               <span>Miễn phí</span>
             </div>
+
             <div className={styles.total}>
-              <span>Tổng cộng</span>
-              <span>1.290.000đ</span>
+              <div>
+                <span style={{ marginRight: "214px" }}>Số tiền đã giảm:</span>
+                {new Intl.NumberFormat("vi-VN").format(
+                  data?.discountApplied,
+                )}
+                đ
+              </div>
+              <div>
+                <span style={{ marginRight: "250px" }}>Tổng cộng: </span>
+                {new Intl.NumberFormat("vi-VN").format(
+                  data?.totalAmountAfterDiscount,
+                )}
+                đ
+              </div>
             </div>
           </div>
 
