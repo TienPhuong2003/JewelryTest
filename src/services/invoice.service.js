@@ -72,8 +72,20 @@ const getInvoiceDetailsById = async (invoiceId) => {
         throw new Error('Lỗi khi lấy thông tin hóa đơn: ' + error.message);
     }
 };
+
+const getInvoiceById = async(invoiceId)=>{
+    try {
+        const invoice = await Invoice.findById(invoiceId);
+        return invoice
+    } catch (error) {
+        console.log(error)
+        throw new Error('Lỗi khi lấy thông tin hóa đơn: ' + error.message);
+    }
+}
+
 module.exports = {
     updateInvoiceStatus,
     getAllInvoicesByUserId,
     getInvoiceDetailsById,
+    getInvoiceById,
 }
