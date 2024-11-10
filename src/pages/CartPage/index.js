@@ -14,7 +14,7 @@ const CartPage = () => {
     { label: "Trang chủ", path: "/" },
     { label: "Giỏ hàng" },
   ];
-
+  
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cartItems")) || [];
     setCartItems(items);
@@ -290,7 +290,7 @@ const DiscountCard = ({ totalAmount ,setDiscount_id }) => {
                     style={{marginRight: '10px', marginTop: '10px'}}
                     onChange={() => setDiscount_id(discount._id)}
                   />
-                  <span>Top Code</span>
+                  <span style={{marginRight: '10px'}}>Top Code</span>
                   <span>{discount.code}</span>
                   <span>{discount.name}</span>
                   <button className={styles.copyButton}>Áp dụng</button>

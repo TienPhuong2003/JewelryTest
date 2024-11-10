@@ -50,6 +50,7 @@ const ProfileUser = () => {
     }
   }, [email]);
 
+  console.log(profileData);
   return (
     <>
       {/* <Breadcrumb items={breadcrumbItems} /> */}
@@ -65,7 +66,9 @@ const ProfileUser = () => {
               </span>
               <span>Email: {profileData.email}</span>
               <span>Điện thoại: {profileData.phoneNumber}</span>
-              <span>Địa chỉ: </span>
+              <span>
+                Địa chỉ: {profileData.addresses.addressLine}, {profileData.addresses.district}, {profileData.addresses.city}, {profileData.addresses.country}
+              </span>
             </div>
           )}
         </div>
