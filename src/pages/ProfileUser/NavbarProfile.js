@@ -7,6 +7,21 @@ function NavbarProfile({ className }) {
   if (decodedToken !== "user") {
     localStorage.clear();
   }
+  // const email = localStorage.getItem("userEmail");
+  // const [addresses, setAddresses] = useState([]);
+  // const fetchAddresses = async () => {
+  //   try {
+  //     const response = await getAddresses(email);
+  //     setAddresses(response);
+  //   } catch (error) {
+  //     console.error("Error fetching addresses:", error);
+  //   }
+  // };
+  // console.log("addresses", addresses);
+  // useEffect(() => {
+  //   fetchAddresses();
+  // }, []);
+
   return (
     <div className={classNames(styles.wrapper, className)}>
       <div className={styles.profileButton}>
@@ -30,7 +45,9 @@ function NavbarProfile({ className }) {
             </Link>
 
             <Link to="/account/addresses">
-              <div className={styles.profile}>Sổ địa chỉ</div>
+              <div className={styles.profile}>
+                Sổ địa chỉ
+              </div>
             </Link>
           </>
         ) : (

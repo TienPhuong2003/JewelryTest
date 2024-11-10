@@ -17,6 +17,7 @@ import ProductList from "../pages/ProductList";
 import VerifyOTP from "../pages/VerifyRegister";
 import ResetPassword from "../pages/ResetPassword";
 import Checkout from "../pages/Checkout";
+import PaymentSuccess from "../pages/PaymentSuccess";
 
 // Middleware để kiểm tra đăng nhập
 function requireAuth(to, from, next) {
@@ -58,6 +59,7 @@ const publicRoutes = [
   { path: "/list-product", component: ProductList },
   { path: "/reset-password", component: ResetPassword },
   { path: "/checkout", component: Checkout, layout: null },
+  { path: "/payment-success", component: PaymentSuccess, layout: null },
 
 
 ];

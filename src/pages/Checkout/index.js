@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Checkout.module.scss";
+import { PaymentVNPAY } from "../../services/api/checkoutService";
 
 const Checkout = () => {
   const location = useLocation();
@@ -15,8 +16,6 @@ const Checkout = () => {
     province: "",
     note: "",
   });
-
-  const [paymentMethod, setPaymentMethod] = useState("COD");
 
   const [showFundiinDetails, setShowFundiinDetails] = useState(false);
 
@@ -44,9 +43,6 @@ const Checkout = () => {
     }));
   };
 
-  console.log("paymentDataArray length:", paymentDataArray.length);
-  console.log("paymentDataArray", paymentDataArray);
-
   const data = paymentDataArray[2];
 
   const addresses = data?.user?.user_profile?.profile_addresses || [];
@@ -54,6 +50,33 @@ const Checkout = () => {
   const handleLogout = () => {
     localStorage.clear();
     navigate("/");
+  };
+
+  const [discount_id, setDiscount_id] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("VNPAY");
+  const [addressId, setAddressId] = useState(addresses[0]?._id || null);
+
+  const handlePayment = async () => {
+    try {
+      const email = localStorage.getItem("userEmail");
+      const items = cartItems.map((item) => ({
+        product_id: item?.id,
+        quantity: item.quantity,
+      }));
+      
+      const response = await PaymentVNPAY({
+        email,
+        addressId,
+        paymentMethod,
+        items,
+        discount_id,
+        totalAmount: data?.totalAmountAfterDiscount,
+      });
+
+      window.location.href = response.data.vnpayResponse; 
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -105,14 +128,19 @@ const Checkout = () => {
                 <select
                   name="streetNumber"
                   value={shippingInfo.streetNumber}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    const selectedIndex = e.target.selectedIndex;
+                    const selectedAddressId = addresses[selectedIndex]?._id;
+                    setAddressId(selectedAddressId);
+                  }}
                 >
                   {addresses.map((address, index) => (
                     <option
                       key={index}
-                      value={`${address.addressLine}, ${address.city}, ${address.country}`}
+                      value={`${address.addressLine}, ${address.district}, ${address.city}, ${address.country}`}
                     >
-                      {`${address.addressLine}, ${address.city}, ${address.country}`}
+                      {`${address.addressLine}, ${address.district}, ${address.city}, ${address.country}`}
                     </option>
                   ))}
                 </select>
@@ -170,7 +198,7 @@ const Checkout = () => {
                     </p>
                     <ul>
                       <li>Trả sau 12 tháng cho đơn hàng lên đến 100 triệu</li>
-                      <li>Trả sau 9 tháng cho đơn hàng lên đến 100 tri���u</li>
+                      <li>Trả sau 9 tháng cho đơn hàng lên đến 100 triệu</li>
                       <li>Trả sau 6 tháng cho đơn hàng lên đến 100 triệu</li>
                     </ul>
                     <p>Ưu đãi:</p>
@@ -191,8 +219,8 @@ const Checkout = () => {
                   <input
                     type="radio"
                     name="payment"
-                    value="vnpay"
-                    checked={paymentMethod === "vnpay"}
+                    value="VNPAY"
+                    checked={paymentMethod === "VNPAY"}
                     onChange={(e) => {
                       setPaymentMethod(e.target.value);
                       setShowVNPayDetails(true);
@@ -211,7 +239,7 @@ const Checkout = () => {
                   />
                 </div>
 
-                {showVNPayDetails && paymentMethod === "vnpay" && (
+                {showVNPayDetails && paymentMethod === "VNPAY" && (
                   <div className={styles.vnpayDetails}>
                     <p>Thanh toán VNPAY</p>
                   </div>
@@ -341,10 +369,7 @@ const Checkout = () => {
             <div className={styles.total}>
               <div>
                 <span style={{ marginRight: "214px" }}>Số tiền đã giảm:</span>
-                {new Intl.NumberFormat("vi-VN").format(
-                  data?.discountApplied,
-                )}
-                đ
+                {new Intl.NumberFormat("vi-VN").format(data?.discountApplied)}đ
               </div>
               <div>
                 <span style={{ marginRight: "250px" }}>Tổng cộng: </span>
@@ -360,7 +385,9 @@ const Checkout = () => {
             <Link to="/cart/gio-hang-cua-ban" className={styles.backToCart}>
               Quay về giỏ hàng
             </Link>
-            <button className={styles.orderButton}>ĐẶT HÀNG</button>
+            <button onClick={handlePayment} className={styles.orderButton}>
+              ĐẶT HÀNG
+            </button>
           </div>
         </div>
       </div>
