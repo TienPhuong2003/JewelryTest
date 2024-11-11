@@ -31,11 +31,9 @@ const ProfileUser = () => {
   console.log(email);
   useEffect(() => {
     const fetchProfile = async () => {
-      console.log("Email value:", email);
       try {
         setLoading(true);
         const data = await getUserProfile(email);
-        console.log("Response data:", data);
         setProfileData(data);
       } catch (err) {
         console.error("Error details:", err);
@@ -49,8 +47,6 @@ const ProfileUser = () => {
       fetchProfile();
     }
   }, [email]);
-
-  console.log(profileData);
   return (
     <>
       {/* <Breadcrumb items={breadcrumbItems} /> */}

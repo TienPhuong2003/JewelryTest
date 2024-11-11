@@ -37,11 +37,9 @@ export const login = async (email, password) => {
     const accessToken = response.data.accessToken;
     // Giải mã accessToken để lấy thông tin người dùng
     const decodedToken = jwtDecode(accessToken).role;
-    console.log("decodedToken", decodedToken);
-
-    // Lấy email từ decodedToken
     const userEmail = jwtDecode(accessToken).email;
-    return { accessToken, userEmail, decodedToken };
+    const userId = jwtDecode(accessToken).userid
+    return { accessToken, userEmail, decodedToken,userId };
   } catch (error) {
     const errorMessage = error.response?.data || 'Có lỗi xảy ra, vui lòng thử lại!';
     console.error("Error:", errorMessage);

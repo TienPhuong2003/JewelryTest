@@ -20,7 +20,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const { userEmail, accessToken, decodedToken } = await login(email, password); // Gọi API đăng nhập
+      const { userEmail, accessToken, decodedToken ,userId} = await login(email, password); // Gọi API đăng nhập
       console.log("Đăng nhập thành công:", accessToken);
       setEmail(userEmail);
       // localStorage.setItem("userEmail", userEmail);
@@ -29,6 +29,7 @@ export default function Login() {
         localStorage.setItem("userEmail", userEmail);
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("decodedToken", decodedToken);
+        localStorage.setItem("userId", userId);
         navigate("/account", { state: { email: userEmail } });
       } else if (decodedToken === "admin") {
         localStorage.setItem("decodedToken", decodedToken);
