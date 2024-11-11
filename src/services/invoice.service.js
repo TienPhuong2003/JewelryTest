@@ -19,8 +19,7 @@ const updateInvoiceStatus = async (invoiceId, status) => {
 };
 
 const getAllInvoicesByUserId = async (userId) => {
-    try {
-
+    try { 
         const invoices = await Invoice.find({ user: userId })
             .select('orderCode purchaseDate paymentMethod amountToPay status');
         return invoices;
