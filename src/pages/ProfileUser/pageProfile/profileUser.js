@@ -57,14 +57,26 @@ const ProfileUser = () => {
           </span>
           {profileData && (
             <div className={styles.user}>
-              <span>
-                Họ tên: {profileData.firstName} {profileData.lastName}
-              </span>
-              <span>Email: {profileData.email}</span>
-              <span>Điện thoại: {profileData.phoneNumber}</span>
-              <span>
-                Địa chỉ: {profileData.addresses.addressLine}, {profileData.addresses.district}, {profileData.addresses.city}, {profileData.addresses.country}
-              </span>
+              <div>
+                <strong>Họ tên: </strong>
+                <span>
+                  {profileData.firstName} {profileData.lastName}
+                </span>
+              </div>
+              <div>
+                <strong>Email: </strong>
+                <span>{profileData.email}</span>
+              </div>
+              <div>
+                <strong>Điện thoại: </strong>
+                <span>{profileData.phoneNumber}</span>
+              </div>
+              <div>
+                <strong>Địa chỉ: </strong>
+                <span>
+                  {profileData.addresses.addressLine}, {profileData.addresses.district}, {profileData.addresses.city}, {profileData.addresses.country}
+                </span>
+              </div>
             </div>
           )}
         </div>

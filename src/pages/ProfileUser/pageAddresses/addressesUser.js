@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, Select, Button, Checkbox } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  Button,
+  Checkbox,
+  notification,
+  Pagination,
+} from "antd";
 import styles from "./AddressesUser.module.scss";
 import {
   getAddresses,
@@ -7,8 +16,10 @@ import {
   deleteAddresses,
   editAddresses,
 } from "../../../services/api/userService";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
+const { confirm } = Modal;
 
 const AddressesUser = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,6 +46,12 @@ const AddressesUser = () => {
 
   const showModal = (type) => {
     setModalType(type);
+    if (type === "add") {
+      setAddressLine("");
+      setDistrict("");
+      setCity("");
+      setCountry("");
+    }
     setIsModalVisible(true);
   };
 
@@ -48,8 +65,16 @@ const AddressesUser = () => {
       });
       fetchAddresses();
       setIsModalVisible(false);
+      notification.success({
+        message: "Thêm địa chỉ thành công",
+        description: "Địa chỉ của bạn đã được thêm.",
+      });
     } catch (error) {
       console.error("Error adding address:", error);
+      notification.error({
+        message: "Thêm địa chỉ thất bại",
+        description: "Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.",
+      });
     }
   };
 
@@ -93,6 +118,45 @@ const AddressesUser = () => {
     }
   };
 
+  const showDeleteConfirm = (id) => {
+    confirm({
+      title: "Bạn có chắc chắn muốn xóa địa chỉ này không?",
+      content: "Hành động này không thể hoàn tác.",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        return handleDelete(id)
+          .then(() => {
+            notification.success({
+              message: "Xóa địa chỉ thành công",
+              description: "Địa chỉ của bạn đã được xóa.",
+            });
+          })
+          .catch(() => {
+            notification.error({
+              message: "Xóa địa chỉ thất bại",
+              description: "Có lỗi xảy ra khi xóa địa chỉ. Vui lòng thử lại.",
+            });
+          });
+      },
+      onCancel() {
+        console.log("Hủy xóa");
+      },
+    });
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const addressesPerPage = 6;
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const indexOfLastAddress = currentPage * addressesPerPage;
+  const indexOfFirstAddress = indexOfLastAddress - addressesPerPage;
+  const currentAddresses = addressesArray.slice(indexOfFirstAddress, indexOfLastAddress);
+
   return (
     <div className={styles.profile}>
       <div className={styles.profileUser}>
@@ -107,61 +171,59 @@ const AddressesUser = () => {
           >
             Thêm địa chỉ
           </Button>
-          {/* <Button
-            type="primary"
-            onClick={() => showModal("edit")}
-            className={styles.resetPassword}
-          >
-            Sửa địa chỉ
-          </Button> */}
         </div>
         <div className={styles.addressList}>
-          {addressesArray.map((address, index) => {
-            return (
-              <div
-                key={index}
-                style={{ marginBottom: "20px", marginTop: "20px" }}
-                className={styles.addressItem}
-              >
-                <div className={styles.addressHeader}>
-                  <span className={styles.addressNumber}>
-                    Địa chỉ {index + 1}
-                  </span>
-                  <Button
-                    type="primary"
-                    onClick={() => handleEdit(address._id)}
+          <table className={`${styles.addressContent} ${styles.table}`}>
+            <thead>
+              <tr>
+                <th>Địa chỉ</th>
+                <th>Quận/Huyện</th>
+                <th>Thành phố</th>
+                <th>Quốc gia</th>
+                <th style={{ textAlign: "center", width: "250px" }}>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentAddresses.map((address, index) => (
+                <tr key={index} style={{ gap: "10px" }}>
+                  <td>{address.addressLine}</td>
+                  <td>{address.district}</td>
+                  <td>{address.city}</td>
+                  <td>{address.country}</td>
+                  <td
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
-                    Sửa
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={() => handleDelete(address._id)}
-                  >
-                    Xóa
-                  </Button>
-                </div>
-                <div className={styles.addressContent}>
-                  <div className={styles.addressLine}>
-                    <span className={styles.label}>Địa chỉ:</span>
-                    <span className={styles.value}>{address.addressLine}</span>
-                  </div>
-                  <div className={styles.district}>
-                    <span className={styles.label}>Quận/Huyện:</span>
-                    <span className={styles.value}>{address.district}</span>
-                  </div>
-                  <div className={styles.city}>
-                    <span className={styles.label}>Thành phố:</span>
-                    <span className={styles.value}>{address.city}</span>
-                  </div>
-                  <div className={styles.country}>
-                    <span className={styles.label}>Quốc gia:</span>
-                    <span className={styles.value}>{address.country}</span>
-                  </div>
-                </div>
-                <div className={styles.addressDivider}></div>
-              </div>
-            );
-          })}
+                    <button
+                      className={`${styles.editButton} editButton`}
+                      onClick={() => handleEdit(address._id)}
+                    >
+                      <EditOutlined style={{ marginRight: "5px" }} />
+                      Sửa
+                    </button>
+                    <button
+                      className={`${styles.deleteButton} deleteButton`}
+                      onClick={() => showDeleteConfirm(address._id)}
+                    >
+                      <DeleteOutlined style={{ marginRight: "5px" }} />
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Pagination
+            current={currentPage}
+            pageSize={addressesPerPage}
+            total={addressesArray.length}
+            onChange={handlePageChange}
+            style={{ marginTop: "20px", textAlign: "center" }}
+          />
         </div>
       </div>
 
@@ -215,7 +277,22 @@ const AddressesUser = () => {
         <Modal
           title={"SỬA ĐỊA CHỈ"}
           visible={isModalVisible}
-          onOk={handleEditAddress}
+          onOk={() => {
+            handleEditAddress()
+              .then(() => {
+                notification.success({
+                  message: "Sửa địa chỉ thành công",
+                  description: "Địa chỉ của bạn đã được cập nhật.",
+                });
+              })
+              .catch(() => {
+                notification.error({
+                  message: "Sửa địa chỉ thất bại",
+                  description:
+                    "Có lỗi xảy ra khi cập nhật địa chỉ. Vui lòng thử lại.",
+                });
+              });
+          }}
           onCancel={handleCancel}
           footer={[
             <Button key="back" onClick={handleCancel}>
@@ -225,7 +302,22 @@ const AddressesUser = () => {
               className={styles.button}
               key="submit"
               type="primary"
-              onClick={handleEditAddress}
+              onClick={() => {
+                handleEditAddress()
+                  .then(() => {
+                    notification.success({
+                      message: "Sửa địa chỉ thành công",
+                      description: "Địa chỉ của bạn đã được cập nhật.",
+                    });
+                  })
+                  .catch(() => {
+                    notification.error({
+                      message: "Sửa địa chỉ thất bại",
+                      description:
+                        "Có lỗi xảy ra khi cập nhật địa chỉ. Vui lòng thử lại.",
+                    });
+                  });
+              }}
             >
               Sửa địa chỉ
             </Button>,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Checkbox, Button } from "antd";
+import { Form, Input, Checkbox, Button, Pagination } from "antd";
 import { login, getUserProfile } from "../../../services/api/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -9,6 +9,7 @@ import { commonMessage } from "../../../components/locales/intl";
 import { defineMessages } from "react-intl";
 import styles from "./CartUser.module.scss";
 import { getAllInvoices } from "../../../services/api/userService";
+import { CheckCircleOutlined, IssuesCloseOutlined } from "@ant-design/icons";
 
 const messages = defineMessages({
   jewelryTitle: {
@@ -19,6 +20,16 @@ const messages = defineMessages({
 
 const CartUser = () => {
   const [orders, setOrders] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 8;
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
 
   const getAll = async () => {
     try {
@@ -33,6 +44,11 @@ const CartUser = () => {
   useEffect(() => {
     getAll();
   }, []);
+
+  const handleInvoiceDetail = (invoiceId) => {
+    localStorage.setItem("invoiceId", invoiceId);
+    window.location.href = "/account/orders/invoice-detail";
+  };
 
   return (
     <div className={styles.profile}>
@@ -64,7 +80,7 @@ const CartUser = () => {
               </th>
               <th
                 style={{
-                  width: "108px",
+                  width: "238px",
                   height: "35px",
                   border: "1px solid #ccc",
                   backgroundColor: "#01567f",
@@ -75,7 +91,7 @@ const CartUser = () => {
               </th>
               <th
                 style={{
-                  width: "132px",
+                  width: "192px",
                   height: "35px",
                   border: "1px solid #ccc",
                   backgroundColor: "#01567f",
@@ -86,7 +102,7 @@ const CartUser = () => {
               </th>
               <th
                 style={{
-                  width: "282px",
+                  width: "188px",
                   height: "35px",
                   border: "1px solid #ccc",
                   backgroundColor: "#01567f",
@@ -109,7 +125,7 @@ const CartUser = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.length === 0 ? (
+            {currentOrders.length === 0 ? (
               <tr>
                 <td
                   colSpan="5"
@@ -123,18 +139,91 @@ const CartUser = () => {
                 </td>
               </tr>
             ) : (
-              orders.map((order, index) => (
-                <tr key={index}>
-                  <td>{order.orderCode}</td>
-                  <td>{order.purchaseDate}</td>
-                  <td>{order.paymentMethod}</td>
-                  <td>{order.amountToPay}</td>
-                  <td>{order.status}</td>
+              currentOrders.map((order, index) => (
+                <tr
+                  key={order._id}
+                  style={{ height: "50px", borderBottom: "1px solid #ebebeb" }}
+                >
+                  <td
+                    style={{
+                      textAlign: "center",
+                      borderRight: "1px solid #ebebeb",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleInvoiceDetail(order._id)}
+                  >
+                    {order.orderCode}
+                  </td>
+                  <td
+                    style={{
+                      textAlign: "center",
+                      borderRight: "1px solid #ebebeb",
+                    }}
+                  >
+                    {/* {order.purchaseDate} */}
+                    {new Date(order.purchaseDate).toLocaleDateString("vi-VN")}
+                  </td>
+                  <td
+                    style={{
+                      textAlign: "center",
+                      borderRight: "1px solid #ebebeb",
+                    }}
+                  >
+                    {order.paymentMethod}
+                  </td>
+                  <td
+                    style={{
+                      textAlign: "center",
+                      borderRight: "1px solid #ebebeb",
+                    }}
+                  >
+                    {new Intl.NumberFormat("vi-VN").format(order.amountToPay)}
+                    <span className={styles.dong}>đ</span>
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {order.status === "success" ? (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Đã thanh toán{" "}
+                        <CheckCircleOutlined
+                          style={{ marginLeft: "23px", color: "green" }}
+                        />
+                      </span>
+                    ) : order.status === "pending" ? (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Đang chờ{" "}
+                        <IssuesCloseOutlined
+                          style={{ marginLeft: "50px", color: "red" }}
+                        />
+                      </span>
+                    ) : (
+                      <span>Trạng thái không xác định</span>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+        <Pagination
+          current={currentPage}
+          pageSize={ordersPerPage}
+          total={orders.length}
+          onChange={handlePageChange}
+          style={{ marginTop: "20px", textAlign: "center" }}
+        />
       </div>
     </div>
     // </PageWrapper>

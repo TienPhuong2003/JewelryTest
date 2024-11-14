@@ -18,6 +18,7 @@ import VerifyOTP from "../pages/VerifyRegister";
 import ResetPassword from "../pages/ResetPassword";
 import Checkout from "../pages/Checkout";
 import PaymentSuccess from "../pages/PaymentSuccess";
+import InvoiceDetail from "../pages/invoiceDetail";
 
 // Middleware để kiểm tra đăng nhập
 function requireAuth(to, from, next) {
@@ -42,17 +43,17 @@ const publicRoutes = [
   //   component: ProfileUser,
   //   layout: DefaultProfile
   // },
-  { path: "/account/orders", component: CartUser, layout: DefaultProfile },
-  {
-    path: "/account/changepassword",
-    component: PasswordUser,
-    layout: DefaultProfile,
-  },
-  {
-    path: "/account/addresses",
-    component: AddressesUser,
-    layout: DefaultProfile,
-  },
+  // { path: "/account/orders", component: CartUser, layout: DefaultProfile },
+  // {
+  //   path: "/account/changepassword",
+  //   component: PasswordUser,
+  //   layout: DefaultProfile,
+  // },
+  // {
+  //   path: "/account/addresses",
+  //   component: AddressesUser,
+  //   layout: DefaultProfile,
+  // },
   { path: "/cart/gio-hang-cua-ban", component: CartPage },
   { path: "/otp", component: VerifyRegister },
   { path: "/detail-product/:id", component: DetailProduct },
@@ -60,7 +61,6 @@ const publicRoutes = [
   { path: "/reset-password", component: ResetPassword },
   { path: "/checkout", component: Checkout, layout: null },
   { path: "/payment-success", component: PaymentSuccess, layout: null },
-
 
 ];
 
@@ -70,6 +70,7 @@ const privateRoutes = [
   { path: "/account/orders", component: CartUser, layout: DefaultProfile, beforeEnter: requireAuth },
   { path: "/account/changepassword", component: PasswordUser, layout: DefaultProfile, beforeEnter: requireAuth },
   { path: "/account/addresses", component: AddressesUser, layout: DefaultProfile, beforeEnter: requireAuth },
+  { path: "/account/orders/invoice-detail", component: InvoiceDetail, layout: DefaultProfile, beforeEnter: requireAuth },
 ];
 
 export { publicRoutes, privateRoutes };

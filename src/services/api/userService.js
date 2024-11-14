@@ -92,3 +92,14 @@ export const getAllInvoices = async (userId) => {
     throw error;
   }
 };
+
+export const getInvoiceDetail = async (invoiceId) => {
+  try {
+    const response = await axios.get(`${API_URL}/invoices/getInvoiceDetail`, {
+      params: { invoiceId },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

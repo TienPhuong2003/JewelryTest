@@ -1,5 +1,6 @@
 .profile {
   .profileUser {
+    width: 1000px;
     .user {
       display: flex;
       flex-direction: column;
@@ -25,5 +26,66 @@
         cursor: pointer;
       }
     }
+
+    .addressContent {
+      margin-top: 5px;
+      line-height: 30px;
+      font-size: 15px;
+    }
+    .addressHeader {
+      display: flex;
+      justify-content: space-between;
+    }
+    .editButton {
+      color: white;
+      font-weight: 600;
+      background: green;
+      border-radius: 15px;
+      width: 80px;
+
+      &:hover {
+        border: 1px solid green;
+        background: transparent;
+        color: green;
+      }
+    }
+    .deleteButton {
+      color: white;
+      margin-left: 10px;
+      font-weight: 600;
+      background: red;
+      border-radius: 15px;
+      width: 80px;
+      &:hover {
+        border: 1px solid red;
+        background: transparent;
+        color: red;
+      }
+    }
   }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table th {
+  background-color: #01567f;
+  color: white;
+  text-align: left;
+}
+
+.button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
