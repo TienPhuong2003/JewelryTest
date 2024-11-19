@@ -42,9 +42,7 @@ const Checkout = () => {
       [name]: value,
     }));
   };
-
   const data = paymentDataArray[2];
-
   const addresses = data?.user?.user_profile?.profile_addresses || [];
 
   const handleLogout = () => {
@@ -52,9 +50,14 @@ const Checkout = () => {
     navigate("/");
   };
 
-  const [discount_id, setDiscount_id] = useState(null);
+  // const [discount_id, setDiscount_id] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("VNPAY");
   const [addressId, setAddressId] = useState(addresses[0]?._id || null);
+
+  const discount_id = localStorage.getItem("discount_id");
+
+  console.log('discount_id', discount_id);
+  
 
   const handlePayment = async () => {
     try {
@@ -63,7 +66,7 @@ const Checkout = () => {
         product_id: item?.id,
         quantity: item.quantity,
       }));
-      
+      console.log('discount_id', discount_id);
       const response = await PaymentVNPAY({
         email,
         addressId,

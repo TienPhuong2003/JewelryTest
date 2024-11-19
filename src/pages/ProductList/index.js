@@ -9,7 +9,6 @@ import {
 } from "../../services/api/productService"; // Import hàm gọi API
 import Pagination from "./PaginationProp"; // Import component Pagination
 import FilterSidebar from "./FilterSidebar";
-import { Content } from "antd/es/layout/layout";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 function ProductList() {
@@ -99,13 +98,6 @@ function ProductList() {
     setCurrentPage(page); // Cập nhật trang hiện tại khi người dùng thay đổi trang
   };
 
-  const updateState = (newState) => {
-    setState((prevState) => ({
-      ...prevState,
-      ...newState,
-    }));
-  };
-
   const handleProductClick = (productId) => {
     navigate(`/detail-product/${productId}`);
   };
@@ -129,12 +121,7 @@ function ProductList() {
               <p>Không có sản phẩm nào.</p>
             ) : (
               products.map((product) => (
-                <div
-                  key={product._id}
-                  className={styles.productCard}
-                  onClick={() => handleProductClick(product._id)}
-                  style={{ cursor: "pointer" }}
-                >
+                <div key={product._id} className={styles.productCard} onClick={() => handleProductClick(product._id)}>
                   <div className={styles.productImage}>
                     <img
                       src={
@@ -143,19 +130,6 @@ function ProductList() {
                       }
                       alt={product.product_name}
                     />
-                    {product.product_isAvailable && (
-                      <svg
-                        className={styles.videoIcon}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                      </svg>
-                    )}
                   </div>
                   <div className={styles.productInfo}>
                     <h2 className={styles.productName}>
@@ -171,9 +145,6 @@ function ProductList() {
                         </p>
                       )}
                     </div>
-                    <p className={styles.productShortDescription}>
-                      {product.product_short_description}
-                    </p>
                   </div>
                 </div>
               ))

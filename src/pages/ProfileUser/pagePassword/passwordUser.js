@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, notification } from "antd";
 import { changePassword } from "../../../services/api/userService";
 import styles from "./PasswordUser.module.scss";
 import { combineReducers } from "redux";
@@ -16,7 +16,7 @@ const PasswordUser = () => {
     e.preventDefault(); // Ngăn chặn hành vi mặc định của form
     setErrorMessage("");
 
-    // Kiểm tra độ dài mật khẩu mới
+    // //Kiểm tra độ dài mật khẩu mới
     // if (newPassword.length < 8) {
     //   setErrorMessage('Mật khẩu mới phải có ít nhất 8 ký tự.');
     //   return;
@@ -29,11 +29,21 @@ const PasswordUser = () => {
     // }
 
     try {
-      
       const response = await changePassword(email, oldPassword, newPassword,confirmPassword);
-      console.log("Đặt lại mật khẩu thành công!", response.data);
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      notification.success({
+        message: "Đặt lại mật khẩu thành công!",
+        description: "Mật khẩu của bạn đã được cập nhật thành công.",
+      });
+
     } catch (error) {
-      setErrorMessage("Đặt lại mật khẩu thất bại. Vui lòng thử lại.");
+      // setErrorMessage("Đặt lại mật khẩu thất bại. Vui lòng thử lại.");
+      notification.error({
+        message: "Đặt lại mật khẩu thất bại!",
+        description: "Mật khẩu của bạn không thể cập nhật.",
+      });
       console.log(error);
       console.error("Lỗi đặt lại mật khẩu:", error.response?.data);
     }

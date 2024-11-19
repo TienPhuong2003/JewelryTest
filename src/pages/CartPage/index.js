@@ -68,6 +68,8 @@ const CartPage = () => {
 
   const [discount_id, setDiscount_id] = useState(null);
 
+  localStorage.setItem("discount_id", discount_id);
+
   const handleCheckout = async () => {
     try {
       const emailtoken = localStorage.getItem("userEmail");
