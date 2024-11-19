@@ -13,28 +13,57 @@ const Sidebar = () => {
 
     return (
         <aside className='sidebar'>
-            <div className='info'>Admin information</div>
+            <div className='info'>
+                <Link to='/'>Đăng xuất</Link>
+            </div>
             <div className='toolbar'>
                 <Link
-                    className={activeLink === "user" ? "active" : null}
+                    className={
+                        activeLink === "user" ||
+                        activeLink === "admin" ||
+                        activeLink === ""
+                            ? "active"
+                            : null
+                    }
                     to='/admin/user'
                     onClick={() => handleLickClick("user")}
                 >
                     Người dùng
                 </Link>
                 <Link
-                    className={activeLink === "book" ? "active" : null}
-                    to='/admin/book'
-                    onClick={() => handleLickClick("book")}
+                    className={activeLink === "product" ? "active" : null}
+                    to='/admin/product'
+                    onClick={() => handleLickClick("product")}
                 >
-                    Sách
+                    Sản phẩm
                 </Link>
                 <Link
-                    className={activeLink === "history" ? "active" : null}
-                    to='/admin/history'
-                    onClick={() => handleLickClick("history")}
+                    className={activeLink === "cate" ? "active" : null}
+                    to='/admin/cate'
+                    onClick={() => handleLickClick("cate")}
                 >
-                    Lịch sử
+                    Danh mục
+                </Link>
+                <Link
+                    className={activeLink === "invoice" ? "active" : null}
+                    to='/admin/invoice'
+                    onClick={() => handleLickClick("invoice")}
+                >
+                    Đơn hàng
+                </Link>
+                <Link
+                    className={activeLink === "discount" ? "active" : null}
+                    to='/admin/discount'
+                    onClick={() => handleLickClick("discount")}
+                >
+                    Giảm giá
+                </Link>
+                <Link
+                    className={activeLink === "statis" ? "active" : null}
+                    to='/admin/statis'
+                    onClick={() => handleLickClick("statis")}
+                >
+                    Thống kê
                 </Link>
             </div>
         </aside>

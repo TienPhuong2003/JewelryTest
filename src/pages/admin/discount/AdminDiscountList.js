@@ -8,54 +8,63 @@ import Filter from "../../../components/admin/filter/Filter";
 import Modal from "../../../components/admin/modal/Modal";
 import config from "../../../config";
 
-const AdminUserList = () => {
-    const API_URL = `${config.API_URL}/user`;
+const AdminDiscountList = () => {
     const [data, setData] = useState([]);
     const [validData, setValidData] = useState([]);
     const [pageData, setPageData] = useState([]);
     const [checkedRow, setCheckedRow] = useState([]);
     let [modal, setModal] = useState(false);
+    const [filters, setFilters] = useState([]);
+    const [initialValues, setInitialValues] = useState([]);
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await axios.get(API_URL);
-            setData(res.data.data);
-            setValidData(res.data.data);
-            setPageData(res.data.data.slice(0, config.LIMIT));
+            const res = await axios.get(
+                `${config.API_URL}/admin/getAllDiscounts`
+            );
+            setData(res.data.discounts);
+            setValidData(res.data.discounts);
+            setPageData(res.data.discounts.slice(0, config.LIMIT));
+            setFilters([
+                {
+                    name: "Loại giảm giá",
+                    type: "discountType",
+                    standards: ["Tất cả", "Phần trăm", "VNĐ"],
+                },
+            ]);
+            setInitialValues({
+                name: { label: "Tên", type: "text", value: "" },
+                condition: { label: "Điều kiện", type: "number", value: "" },
+                startDate: { label: "Ngày bắt đầu", type: "date", value: "" },
+                endDate: {
+                    label: "Ngày kết thúc",
+                    type: "date",
+                    value: "",
+                },
+                discountAmount: {
+                    label: "Giảm giá",
+                    type: "number",
+                    value: "",
+                },
+                discountType: {
+                    label: "Mật khẩu",
+                    type: "select",
+                    value: "percent",
+                    options: ["Phần trăm", "VNĐ"],
+                    options_value: ["percent", "fixed"],
+                },
+            });
         } catch (error) {
-            console.error("Error fetching users:", error);
+            console.error("Error fetching discounts:", error);
         }
-    }, [API_URL]);
-    const standardSearch = ["fullName"];
+    }, []);
+    const standardSearch = ["name", "condition"];
     const standardSort = [
-        { name: "Họ tên", type: "fullName" },
-        { name: "Ngày tạo", type: "createdAt" },
+        { name: "Điều kiện", type: "condition" },
+        { name: "Ngày bắt đầu", type: "startDate" },
+        { name: "Ngày kết thúc", type: "endDate" },
+        { name: "Giảm", type: "discountAmount" },
     ];
-    const filters = [
-        {
-            name: "Vai trò",
-            type: "role",
-            standards: ["Tất cả", "Admin", "User"],
-        },
-        {
-            name: "Trạng thái",
-            type: "status",
-            standards: [
-                "Tất cả",
-                "Đang hoạt động",
-                "Chưa kích hoạt",
-                "Đã khóa",
-            ],
-        },
-    ];
-    const initialValues = {
-        username: { label: "Tên đăng nhập", type: "text", value: "" },
-        password: { label: "Mật khẩu", type: "password", value: "" },
-        email: { label: "Email", type: "email", value: "" },
-        fullName: { label: "Họ và tên", type: "text", value: "" },
-        address: { label: "Địa chỉ", type: "text", value: "" },
-        dateOfBirth: { label: "Ngày sinh", type: "date", value: "1999-01-01" },
-    };
 
     const validationSchema = Yup.object(
         Object.keys(initialValues).reduce((schema, field) => {
@@ -66,30 +75,30 @@ const AdminUserList = () => {
         }, {})
     );
 
-    const addUser = useCallback(
+    const addData = useCallback(
         async ({
-            username,
-            password,
-            email,
-            fullName,
-            address,
-            dateOfBirth,
+            name,
+            condition,
+            startDate,
+            endDate,
+            discountAmount,
+            discountType,
         }) => {
             try {
-                const res = await axios.post(API_URL, {
-                    username: username,
-                    password: password,
-                    email: email,
-                    fullName: fullName,
-                    address: address,
-                    dateOfBirth: dateOfBirth,
+                const res = await axios.post(`${config.API_URL}discounts`, {
+                    name,
+                    condition,
+                    startDate,
+                    endDate,
+                    discountAmount,
+                    discountType,
                 });
-                if (res.status === 200) {
+                if (res.status === 201) {
                     setModal(false);
                     // Fetch lại toàn bộ data sau khi thêm
                     fetchData();
                     Swal.fire({
-                        title: "Thêm người dùng thành công!",
+                        title: "Thêm thành công!",
                         icon: "success",
                         showConfirmButton: false,
                         timer: 1500, // Tự tắt sau 2 giây
@@ -106,7 +115,7 @@ const AdminUserList = () => {
                 });
             }
         },
-        [API_URL, fetchData]
+        [fetchData]
     );
 
     const handleDeleteData = async () => {
@@ -153,10 +162,11 @@ const AdminUserList = () => {
     };
 
     const deleteData = async (ids) => {
-        const res = await axios.delete(API_URL, {
-            data: { ids: ids },
+        const res = ids.every(async (id) => {
+            await axios.delete(`${config.API_URL}discounts/${id}`);
+            return true;
         });
-        if (res.status === 200) {
+        if (res === true) {
             // Uncheck các checkbox đã chọn
             document
                 .querySelectorAll("input[type='checkbox']")
@@ -173,12 +183,12 @@ const AdminUserList = () => {
 
     useEffect(() => {
         fetchData(); // Gọi hàm fetchData
-    }, [addUser, fetchData]);
+    }, [addData, fetchData]);
     return (
         <div className='wrapper'>
             <header className='admin-header'>
                 <div className='container'>
-                    <h2>DANH SÁCH NGƯỜI DÙNG</h2>
+                    <h2>QUẢN LÝ GIẢM GIÁ</h2>
                 </div>
             </header>
             <main className='main'>
@@ -213,8 +223,7 @@ const AdminUserList = () => {
                         <div className='card-body'>
                             <Table
                                 rows={pageData}
-                                columns={config.TABLE_USER_COL}
-                                rowLink={`/admin/user`}
+                                columns={config.TABLE_DISCOUNT_COL}
                                 setChecked={setCheckedRow}
                             />
                         </div>
@@ -232,7 +241,7 @@ const AdminUserList = () => {
                         title={"Thêm người dùng"}
                         initialValues={initialValues}
                         validationSchema={validationSchema}
-                        handleAdd={addUser}
+                        handleAdd={addData}
                     />
                 </div>
             </main>
@@ -240,4 +249,4 @@ const AdminUserList = () => {
     );
 };
 
-export default AdminUserList;
+export default AdminDiscountList;

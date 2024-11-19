@@ -124,6 +124,7 @@ function ProductList() {
                 <div key={product._id} className={styles.productCard} onClick={() => handleProductClick(product._id)}>
                   <div className={styles.productImage}>
                     <img
+                      style={{cursor: 'pointer'}}
                       src={
                         product.product_details.product_images[0]?.secure_url ||
                         "https://via.placeholder.com/300"
@@ -132,7 +133,7 @@ function ProductList() {
                     />
                   </div>
                   <div className={styles.productInfo}>
-                    <h2 className={styles.productName}>
+                    <h2 style={{cursor: 'pointer'}} className={styles.productName}>
                       {product.product_name}
                     </h2>
                     <div className={styles.priceContainer}>

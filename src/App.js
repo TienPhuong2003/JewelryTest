@@ -11,20 +11,29 @@ import { DefaultLayout } from "./components/Layout";
 import AdminLayout from "./components/Layout/AdminLayout/AdminLayout";
 import AdminUserList from "./pages/admin/user/AdminUserList";
 import AdminUserDetail from "./pages/admin/user/AdminUserDetail";
+import AdminProductList from "./pages/admin/product/AdminProductList";
+import AdminProductDetail from "./pages/admin/product/AdminProductDetail";
+import AdminCateList from "./pages/admin/category/AdminCateList";
+import AdminInvoiceList from "./pages/admin/invoice/AdminInvoiceList";
+import AdminInvoiceDetail from "./pages/admin/invoice/AdminInvoiceDetail";
+import AdminDiscountList from "./pages/admin/discount/AdminDiscountList";
+import AdminStatis from "./pages/admin/statis/AdminStatis";
 
-// Middleware để kiểm tra đăng nhập
 function requireAuth({ children }) {
   const token = localStorage.getItem("decodedToken");
-  // Kiểm tra token có hợp lệ không
+
   return token ? children : <Navigate to="/login" />;
 }
 
-// Hàm kiểm tra quyền admin
 function RequireAdmin({ children }) {
   const decodedToken = localStorage.getItem("decodedToken");
-  const isAdmin = decodedToken === "admin"; // Giả sử token "admin" là token hợp lệ cho admin
+  const isAdmin = decodedToken === "admin";
 
-  return isAdmin ? children : <div>Bạn không phải admin, vui lòng đăng nhập với tài khoản admin.</div>;
+  return isAdmin ? (
+    children
+  ) : (
+    <div>Bạn không phải admin, vui lòng đăng nhập với tài khoản admin.</div>
+  );
 }
 
 function App() {
@@ -78,15 +87,23 @@ function App() {
             />
           );
         })}
-        <Route path="/admin/" element={
-          <RequireAdmin>
-            <AdminLayout />
-          </RequireAdmin>
-        }>
+        <Route path="/admin/" element={<AdminLayout />}>
           <Route index element={<AdminUserList />} />
           {/* ADMIN USER */}
           <Route path="/admin/user" element={<AdminUserList />} />
-          <Route path="/admin/user/:id" element={<AdminUserDetail />} />
+          <Route path="/admin/user/:email" element={<AdminUserDetail />} />
+          {/* ADMIN PRODUCT */}
+          <Route path="/admin/product" element={<AdminProductList />} />
+          <Route path="/admin/product/:id" element={<AdminProductDetail />} />
+          {/* ADMIN CATEGORY */}
+          <Route path="/admin/cate" element={<AdminCateList />} />
+          {/* ADMIN INVOICE */}
+          <Route path="/admin/invoice" element={<AdminInvoiceList />} />
+          <Route path="/admin/invoice/:id" element={<AdminInvoiceDetail />} />
+          {/* ADMIN DISCOUNT */}
+          <Route path="/admin/discount" element={<AdminDiscountList />} />
+          {/* ADMIN STATIS */}
+          <Route path="/admin/statis" element={<AdminStatis />} />
         </Route>
       </Routes>
     </Router>

@@ -8,27 +8,31 @@ import Filter from "../../../components/admin/filter/Filter";
 import Modal from "../../../components/admin/modal/Modal";
 import config from "../../../config";
 
-const AdminUserList = () => {
-    const API_URL = `${config.API_URL}/admin/users`;
+const AdminInvoiceList = () => {
+    const API_URL = `${config.API_URL}admin`;
     const [data, setData] = useState([]);
     const [validData, setValidData] = useState([]);
     const [pageData, setPageData] = useState([]);
-    const [checkedRow, setCheckedRow] = useState([]);
-    let [modal, setModal] = useState(false);
     const [filters, setFilters] = useState([]);
     const [initialValues, setInitialValues] = useState([]);
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await axios.get(API_URL);
-            setData(res.data.users);
-            setValidData(res.data.users);
-            setPageData(res.data.users.slice(0, config.LIMIT));
+            const res = await axios.get(`${API_URL}/getAllInvoices`);
+            setData(res.data.invoices);
+            setValidData(res.data.invoices);
+            setPageData(res.data.invoices.slice(0, config.LIMIT));
+
             setFilters([
                 {
-                    name: "Xác nhận",
-                    type: "verified",
-                    standards: ["Tất cả", "Đang hoạt động", "Chưa kích hoạt"],
+                    name: "Trạng thái",
+                    type: "status",
+                    standards: ["Tất cả", "Thành công", "Đang chờ", "Hủy đơn"],
+                },
+                {
+                    name: "Phương thức",
+                    type: "paymentMethod",
+                    standards: ["Tất cả", "VNPAY", "COD"],
                 },
             ]);
             setInitialValues({
@@ -43,12 +47,13 @@ const AdminUserList = () => {
                 password: { label: "Mật khẩu", type: "password", value: "" },
             });
         } catch (error) {
-            console.error("Error fetching users:", error);
+            console.error("Error fetching invoices:", error);
         }
     }, [API_URL]);
-    const standardSearch = ["fullName", "email", "phone"];
+    const standardSearch = ["orderCode", "username"];
     const standardSort = [
-        { name: "Họ tên", type: "fullName" },
+        { name: "Mã đơn", type: "orderCode" },
+        { name: "Người mua", type: "username" },
         { name: "Ngày tạo", type: "createdAt" },
     ];
 
@@ -61,52 +66,14 @@ const AdminUserList = () => {
         }, {})
     );
 
-    const addUser = useCallback(
-        async ({ lastName, firstName, email, phoneNumber, password }) => {
-            try {
-                const res = await axios.post(
-                    `${config.API_URL}/auth/register`,
-                    {
-                        lastName: lastName,
-                        firstName: firstName,
-                        email: email,
-                        phoneNumber: phoneNumber,
-                        password: password,
-                    }
-                );
-                if (res.status === 201) {
-                    setModal(false);
-                    // Fetch lại toàn bộ data sau khi thêm
-                    fetchData();
-                    Swal.fire({
-                        title: "Thêm thành công!",
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500, // Tự tắt sau 2 giây
-                        timerProgressBar: true,
-                    });
-                }
-            } catch (err) {
-                Swal.fire({
-                    title: "Thêm không thành công!",
-                    icon: "error",
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                });
-            }
-        },
-        [API_URL, fetchData]
-    );
-
     useEffect(() => {
         fetchData(); // Gọi hàm fetchData
-    }, [addUser, fetchData]);
+    }, [fetchData]);
     return (
         <div className='wrapper'>
             <header className='admin-header'>
                 <div className='container'>
-                    <h2>QUẢN LÝ NGƯỜI DÙNG</h2>
+                    <h2>QUẢN LÝ ĐƠN HÀNG</h2>
                 </div>
             </header>
             <main className='main'>
@@ -123,22 +90,12 @@ const AdminUserList = () => {
                                     standardSort={standardSort}
                                 />
                             </div>
-                            <div className='card-btns'>
-                                <button
-                                    className='admin-btn'
-                                    onClick={() => setModal(true)}
-                                >
-                                    Thêm
-                                </button>
-                            </div>
                         </div>
                         <div className='card-body'>
                             <Table
                                 rows={pageData}
-                                columns={config.TABLE_USER_COL}
-                                rowLink={`/admin/user`}
-                                isUser={true}
-                                setChecked={setCheckedRow}
+                                columns={config.TABLE_INVOICE_COL}
+                                rowLink={`/admin/invoice`}
                             />
                         </div>
                         <div className='card-footer'>
@@ -149,18 +106,10 @@ const AdminUserList = () => {
                             />
                         </div>
                     </div>
-                    <Modal
-                        modal={modal}
-                        setModal={setModal}
-                        title={"Thêm người dùng"}
-                        initialValues={initialValues}
-                        validationSchema={validationSchema}
-                        handleAdd={addUser}
-                    />
                 </div>
             </main>
         </div>
     );
 };
 
-export default AdminUserList;
+export default AdminInvoiceList;

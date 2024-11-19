@@ -32,23 +32,6 @@ function Home() {
         getProducts();
         getSaleProductsData();
     }, []);
-
-    // useEffect(() => {
-    //     const getCateProducts = async () => {
-    //         let data;
-    //         if (selectedCategory) {
-    //             data = await getProductbyCategory(selectedCategory, limit, 1); // Lấy sản phẩm theo danh mục
-    //         }
-    //         if (data && data.data) {
-    //             setCateProducts(data.data.product.products); // Lưu sản phẩm vào state
-    //         }
-    //         console.log(data.data);
-
-    //     };
-
-    //     getCateProducts();
-    // }, [selectedCategory]);
-
     const handleCategoryClick = (categoryId) => {
         setSelectedCategory(categoryId);
     };
@@ -63,11 +46,6 @@ function Home() {
             <div>
                 <img className={styles.img} src="https://bizweb.dktcdn.net/100/461/213/themes/870653/assets/slider_1.jpg?1728012064200" alt="Bộ Sưu Tập Resort ' 2024"></img>
             </div>
-            {/* {listUsers.map((user, index) => {
-                return <div key={`users-${index}`}>
-                    {user.email}
-                </div>
-            })} */}
 
 
             <div className={styles.section}>

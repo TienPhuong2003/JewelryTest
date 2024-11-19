@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import "./table.css";
 
-const Table = ({ rows, columns, rowLink, setChecked }) => {
+const Table = ({ rows, columns, rowLink, setChecked, isUser }) => {
     const nav = useNavigate();
     const [formattedRows, setFormattedRow] = useState([]);
     useEffect(() => {
@@ -11,14 +11,27 @@ const Table = ({ rows, columns, rowLink, setChecked }) => {
             rows.map((row) => {
                 return {
                     ...row,
-                    createdAt: format(row.createdAt, "dd MMM yyyy, h:mm a"),
+                    createdAt: row.createdAt
+                        ? format(row.createdAt, "dd MMM yyyy, h:mm a")
+                        : "",
+                    startDate: row.startDate
+                        ? format(row.startDate, "dd MMM yyyy, h:mm a")
+                        : "",
+                    endDate: row.endDate
+                        ? format(row.endDate, "dd MMM yyyy, h:mm a")
+                        : "",
+                    product_isAvailable: row.product_isAvailable
+                        ? "Còn hàng"
+                        : "Hết hàng",
                 };
             })
         );
-        document
-            .querySelectorAll("input[type='checkbox']")
-            .forEach((ckb) => (ckb.checked = false));
-        setChecked([]);
+        if (typeof setChecked !== "undefined") {
+            document
+                .querySelectorAll("input[type='checkbox']")
+                .forEach((ckb) => (ckb.checked = false));
+            setChecked([]);
+        }
     }, [rows]);
 
     const handleCheck = (e) => {
@@ -49,12 +62,16 @@ const Table = ({ rows, columns, rowLink, setChecked }) => {
         <table className='card-table'>
             <thead>
                 <tr>
-                    <th>
-                        <input
-                            type='checkbox'
-                            onClick={(e) => handleCheckAll(e)}
-                        />
-                    </th>
+                    {typeof setChecked !== "undefined" ? (
+                        <th className='col-checkbox'>
+                            <input
+                                type='checkbox'
+                                onClick={(e) => handleCheckAll(e)}
+                            />
+                        </th>
+                    ) : (
+                        ""
+                    )}
                     {columns.map((col) => (
                         <th key={col.key}>{col.header}</th>
                     ))}
@@ -66,19 +83,40 @@ const Table = ({ rows, columns, rowLink, setChecked }) => {
                         <tr
                             key={index}
                             className='table-row'
-                            onClick={() => nav(`${rowLink}/${row._id}`)}
+                            onClick={
+                                rowLink
+                                    ? () =>
+                                          nav(
+                                              `${rowLink}/${isUser ? row.email : row._id}`
+                                          )
+                                    : null
+                            }
                             style={{ cursor: "pointer" }}
                         >
-                            <td>
-                                <input
-                                    type='checkbox'
-                                    name='ckb-data'
-                                    value={row._id}
-                                    onClick={(e) => handleCheck(e)}
-                                />
-                            </td>
+                            {typeof setChecked !== "undefined" ? (
+                                <td className='col-checkbox'>
+                                    <input
+                                        type='checkbox'
+                                        name='ckb-data'
+                                        value={row._id}
+                                        onClick={(e) => handleCheck(e)}
+                                    />
+                                </td>
+                            ) : (
+                                ""
+                            )}
                             {columns.map((col) => (
-                                <td key={col.key}>{row[col.key]}</td>
+                                <td key={col.key}>
+                                    {(col.key.includes("price") ||
+                                        col.key.includes("amount") ||
+                                        col.key.includes("Amount")) &&
+                                    col.key !== "discountAmount"
+                                        ? new Intl.NumberFormat("vi-VN", {
+                                              style: "currency",
+                                              currency: "VND",
+                                          }).format(Number(row[col.key]))
+                                        : row[col.key]}
+                                </td>
                             ))}
                         </tr>
                     ))

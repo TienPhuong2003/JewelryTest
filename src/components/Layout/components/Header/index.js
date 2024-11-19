@@ -251,6 +251,7 @@ function Header() {
               <li
                 key={item._id}
                 onMouseEnter={() => handleMouseEnter(item._id)}
+                onClick={() => handleCategoryClick(item._id)}
               >
                 {item.category_name.toUpperCase()}
                 <div className={styles.submenu}>

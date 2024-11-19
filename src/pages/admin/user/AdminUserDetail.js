@@ -12,27 +12,74 @@ import {
     faArrowUpWideShort,
     faArrowUpShortWide,
 } from "@fortawesome/free-solid-svg-icons";
+import config from "../../../config";
+import Filter from "../../../components/admin/filter/Filter";
+import Table from "../../../components/admin/table/Table";
+import Pagination from "../../../components/admin/pagination/Pagination";
 
 const AdminUserDetail = () => {
-    const API_URL = "http://localhost:8080/admin/user";
-    const { id } = useParams();
+    const API_URL = `${config.API_URL}users/profiles`;
+    const { email } = useParams();
     const [user, setUser] = useState([]);
+    const [data, setData] = useState([]);
+    const [validData, setValidData] = useState([]);
+    const [pageData, setPageData] = useState([]);
+    const [filters, setFilters] = useState([]);
+    const [initialValues, setInitialValues] = useState([]);
 
     const fetchUser = useCallback(async () => {
         // Fetch user được chọn
         try {
-            const res = await axios.get(`${API_URL}/${id}`);
-            setUser(res.data.data);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
+            const res = await axios.get(`${API_URL}/${email}`);
+            setUser(res.data);
 
-        try {
-            const res = await axios.get(`http://localhost:8080/admin/user`);
+            const resInvoice = await axios.get(
+                `${config.API_URL}admin/getAllInvoices`
+            );
+
+            const userInvoices = resInvoice.data.invoices.filter((invoice) => {
+                console.log(invoice.userEmail);
+                console.log(email);
+                return invoice.userEmail === email ? invoice : null;
+            });
+
+            setData(userInvoices);
+            setValidData(userInvoices);
+            setPageData(userInvoices.slice(0, config.LIMIT));
+
+            setFilters([
+                {
+                    name: "Trạng thái",
+                    type: "status",
+                    standards: ["Tất cả", "Thành công", "Đang chờ", "Hủy đơn"],
+                },
+                {
+                    name: "Phương thức",
+                    type: "paymentMethod",
+                    standards: ["Tất cả", "VNPAY", "COD"],
+                },
+            ]);
+            setInitialValues({
+                lastName: { label: "Họ", type: "text", value: "" },
+                firstName: { label: "Tên", type: "text", value: "" },
+                email: { label: "Email", type: "email", value: "" },
+                phoneNumber: {
+                    label: "Số điện thoại",
+                    type: "phone",
+                    value: "",
+                },
+                password: { label: "Mật khẩu", type: "password", value: "" },
+            });
         } catch (error) {
             console.error("Error fetching users:", error);
         }
-    }, [id]);
+    }, [email]);
+    const standardSearch = ["orderCode", "username"];
+    const standardSort = [
+        { name: "Mã đơn", type: "orderCode" },
+        { name: "Người mua", type: "username" },
+        { name: "Ngày tạo", type: "createdAt" },
+    ];
 
     // MAIN
     useEffect(() => {
@@ -42,26 +89,24 @@ const AdminUserDetail = () => {
     const formik = useFormik({
         enableReinitialize: true, // Cho phép thay đổi initialValues khi user thay đổi
         initialValues: {
-            username: user.username || "",
-            password: user.password || "",
-            email: user.email || "",
-            role: user.role || "",
-            fullName: user.fullName || "",
-            address: user.address || "",
-            dateOfBirth: user.dateOfBirth || "1999-01-01",
-            status: user.status || "",
-            createdAt: user.createdAt || "1999-01-01",
+            lastName: user.lastName,
+            firstName: user.firstName,
+            email: user.email,
+            phone: user.phoneNumber,
+            country: user.addresses ? user.addresses.city : "",
+            city: user.addresses ? user.addresses.city : "",
+            district: user.addresses ? user.addresses.district : "",
+            addressLine: user.addresses ? user.addresses.addressLine : "",
         },
         validationSchema: Yup.object({
-            username: Yup.string().required(),
-            password: Yup.string().required(),
+            lastName: Yup.string().required(),
+            firstName: Yup.string().required(),
             email: Yup.string().required(),
-            role: Yup.string().required(),
-            fullName: Yup.string().required(),
-            address: Yup.string().required(),
-            dateOfBirth: Yup.date().required(),
-            status: Yup.string().required(),
-            createdAt: Yup.string().required(),
+            phone: Yup.string().required(),
+            country: Yup.string().required(),
+            city: Yup.string().required(),
+            district: Yup.string().required(),
+            addressLine: Yup.string().required(),
         }),
         onSubmit: async (values) => {
             try {
@@ -76,9 +121,20 @@ const AdminUserDetail = () => {
                     timerProgressBar: true,
                 }).then(async (result) => {
                     if (result.isConfirmed) {
-                        await axios.put(API_URL, {
-                            user: { ...values, _id: id },
+                        await axios.put(`${API_URL}/${email}`, {
+                            firstName: values.firstName,
+                            lastName: values.lastName,
+                            phoneNumber: values.phone,
                         });
+                        await axios.put(
+                            `${config.API_URL}users/addresses/${user.addresses._id}`,
+                            {
+                                country: values.country,
+                                city: values.city,
+                                district: values.district,
+                                addressLine: values.addressLine,
+                            }
+                        );
                         Swal.fire({
                             title: "Cập nhập thành công!",
                             text: "Bạn đã cập nhật thông tin thành công.",
@@ -90,8 +146,7 @@ const AdminUserDetail = () => {
                 });
             } catch (error) {
                 Swal.fire({
-                    title: "Error Adding User!",
-                    text: "There was an issue adding the user.",
+                    title: "Cập nhập không thành công!",
                     icon: "error",
                     showConfirmButton: false,
                     timer: 1000,
@@ -120,87 +175,63 @@ const AdminUserDetail = () => {
                                 <h2>Thông tin chi tiết</h2>
                             </div>
                             <div className='modal-form-body'>
-                                <label>Tên đăng nhập</label>
+                                <label>Họ:</label>
                                 <input
-                                    className='disabled'
                                     type='text'
-                                    name='username'
-                                    placeholder='user'
+                                    name='fullName'
                                     required
-                                    {...formik.getFieldProps("username")}
-                                    disabled
+                                    {...formik.getFieldProps("lastName")}
                                 />
-                                <label>Mật khẩu</label>
+                                <label>Tên:</label>
                                 <input
-                                    type='password'
-                                    name='password'
-                                    placeholder='user@123'
+                                    type='text'
+                                    name='firstName'
                                     required
-                                    {...formik.getFieldProps("password")}
+                                    {...formik.getFieldProps("firstName")}
                                 />
-                                <label>Email</label>
+                                <label>Email:</label>
                                 <input
                                     className='disabled'
                                     type='email'
                                     name='email'
-                                    placeholder='email@gmail.com'
                                     required
                                     {...formik.getFieldProps("email")}
                                     disabled
                                 />
-                                <label>Vai trò</label>
-                                <select
-                                    name='role'
-                                    {...formik.getFieldProps("role")}
-                                >
-                                    <option value='admin' label='admin' />
-                                    <option value='user' label='user' />
-                                </select>
-                                <label>Họ tên</label>
+                                <label>Số điện thoại:</label>
                                 <input
-                                    type='text'
-                                    name='fullName'
-                                    placeholder='Nguyễn Văn A'
+                                    type='phone'
+                                    name='phone'
                                     required
-                                    {...formik.getFieldProps("fullName")}
+                                    {...formik.getFieldProps("phone")}
                                 />
-                                <label>Địa chỉ</label>
+                                <label>Quốc gia:</label>
                                 <input
                                     type='text'
-                                    name='address'
-                                    placeholder='Số 1 VVN, Linh Chiểu, Gò Vấp'
-                                    {...formik.getFieldProps("address")}
+                                    name='country'
+                                    required
+                                    {...formik.getFieldProps("country")}
                                 />
-                                <label>Ngày sinh</label>
+                                <label>Tỉnh/Thành phố:</label>
                                 <input
-                                    type='date'
-                                    name='dateOfBirth'
-                                    value={formik.values.dateOfBirth}
-                                    {...formik.getFieldProps("dateOfBirth")}
-                                />
-                                <label>Trạng thái</label>
-                                <select
-                                    name='status'
-                                    {...formik.getFieldProps("status")}
-                                >
-                                    <option
-                                        value='Đang hoạt động'
-                                        label='Đang hoạt động'
-                                    />
-                                    <option
-                                        value='Chưa kích hoạt'
-                                        label='Chưa kích hoạt'
-                                    />
-                                    <option value='Đã khóa' label='Đã khóa' />
-                                </select>
-                                <label>Ngày tạo</label>
-                                <input
-                                    className='disabled'
                                     type='text'
-                                    name='createdAt'
-                                    value={formik.values.createdAt}
-                                    {...formik.getFieldProps("createdAt")}
-                                    disabled
+                                    name='city'
+                                    required
+                                    {...formik.getFieldProps("city")}
+                                />
+                                <label>Quận/Huyện:</label>
+                                <input
+                                    type='text'
+                                    name='district'
+                                    required
+                                    {...formik.getFieldProps("district")}
+                                />
+                                <label>Đường:</label>
+                                <input
+                                    type='text'
+                                    name='addressLine'
+                                    required
+                                    {...formik.getFieldProps("addressLine")}
                                 />
                             </div>
                             <div className='modal-form-footer'>
@@ -217,7 +248,40 @@ const AdminUserDetail = () => {
                             </div>
                         </form>
                     </div>
-                    <div className='card col col-8'></div>
+                    <div className='card col col-8'>
+                        <div
+                            className='modal-form-header'
+                            style={{ marginBottom: "70px" }}
+                        >
+                            <h2>Lịch sử giao dịch</h2>
+                        </div>
+                        <div className='card-header'>
+                            <div className='card-tools'>
+                                <Filter
+                                    filters={filters}
+                                    data={data}
+                                    validData={validData}
+                                    setValidData={setValidData}
+                                    standardSearch={standardSearch}
+                                    standardSort={standardSort}
+                                />
+                            </div>
+                        </div>
+                        <div className='card-body'>
+                            <Table
+                                rows={pageData}
+                                columns={config.TABLE_INVOICE_COL}
+                                rowLink={`/admin/user`}
+                            />
+                        </div>
+                        <div className='card-footer'>
+                            <div className='card-display-count'></div>
+                            <Pagination
+                                data={validData}
+                                setPageData={setPageData}
+                            />
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
