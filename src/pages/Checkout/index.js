@@ -56,8 +56,30 @@ const Checkout = () => {
 
   const discount_id = localStorage.getItem("discount_id");
 
-  console.log('discount_id', discount_id);
-  
+  // const handlePayment = async () => {
+  //   try {
+  //     const email = localStorage.getItem("userEmail");
+  //     const items = cartItems.map((item) => ({
+  //       product_id: item?.id,
+  //       quantity: item.quantity,
+  //     }));
+  //     console.log('discount_id', discount_id);
+  //     const response = await PaymentVNPAY({
+  //       email,
+  //       addressId,
+  //       paymentMethod,
+  //       items,
+  //       discount_id,
+  //       totalAmount: data?.totalAmountAfterDiscount,
+  //     });
+
+  //     console.log('paymentMethod', paymentMethod);
+
+  //     window.location.href = response.data.vnpayResponse;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const handlePayment = async () => {
     try {
@@ -66,7 +88,7 @@ const Checkout = () => {
         product_id: item?.id,
         quantity: item.quantity,
       }));
-      console.log('discount_id', discount_id);
+      console.log("discount_id", discount_id);
       const response = await PaymentVNPAY({
         email,
         addressId,
@@ -76,7 +98,12 @@ const Checkout = () => {
         totalAmount: data?.totalAmountAfterDiscount,
       });
 
-      window.location.href = response.data.vnpayResponse; 
+      // Chuyển hướng dựa trên phương thức thanh toán
+      if (paymentMethod === "VNPAY") {
+        window.location.href = response.data.vnpayResponse;
+      } else if (paymentMethod === "COD") {
+        navigate("/payment-success");
+      }
     } catch (error) {
       console.error(error);
     }

@@ -123,6 +123,11 @@
         width: 303px;
         height: 305px;
         object-fit: contain;
+
+        &:hover {
+          cursor: pointer;
+          opacity: 0.8;
+        }
       }
 
       .footerItem {

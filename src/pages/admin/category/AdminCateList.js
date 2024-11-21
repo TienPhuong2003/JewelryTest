@@ -256,7 +256,7 @@ const AdminUserList = () => {
                                     </thead>
                                     <tbody>
                                         {data.length > 0 ? (
-                                            data.map((row, index) => (
+                                            data.map((row, index) => row.category_parentId === null ? (
                                                 <tr
                                                     key={index}
                                                     className={`table-row ${rowActive === row._id ? "active" : ""}`}
@@ -287,7 +287,7 @@ const AdminUserList = () => {
                                                         )
                                                     )}
                                                 </tr>
-                                            ))
+                                            ) : <></>) 
                                         ) : (
                                             <tr>
                                                 <td colSpan='2'>

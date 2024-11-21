@@ -29,7 +29,7 @@ function NavbarProfile({ className }) {
           <>
             <span className={styles.account}>TRANG TÀI KHOẢN</span>
             <p className={styles.welcome}>
-              Xin chào, <span>Huy Cường!</span>
+              {/* Xin chào, <span>Huy Cường!</span> */}
             </p>
 
             <Link to="/account">

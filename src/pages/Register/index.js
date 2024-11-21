@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { register } from "../../services/api/authService"; // Import hàm đăng ký từ service
 import styles from "./register.module.scss"; // Import SCSS module
 import Breadcrumb from "../../components/Breadcrumb";
+import { notification } from "antd";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,8 +18,33 @@ export default function Register() {
     { label: "Đăng ký" },
   ];
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const data = { firstName, lastName, email, phoneNumber, password }; // Dữ liệu đăng ký
+  //   console.log(data);
+  //   try {
+  //     const response = await register(data); // Gọi API đăng ký
+  //     console.log("Đăng ký thành công:", response);
+  //     const urlParams = new URLSearchParams(
+  //       response.user.verifyUrl.split("?")[1],
+  //     );
+  //     const q = urlParams.get("q"); // Lấy giá trị của q
+  //     navigate("/otp", { state: { q } }); // Truyền q vào state để sử dụng trong trang OTP
+  //   } catch (error) {
+  //     alert(error.message); // Hiển thị thông báo lỗi
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Kiểm tra độ dài mật khẩu
+    if (password.length < 8) {
+      notification.error({
+        message: "Thông báo",
+        description: "Mật khẩu phải có ít nhất 8 ký tự.",
+      });
+      return; // Dừng thực hiện nếu mật khẩu không hợp lệ
+    }
     const data = { firstName, lastName, email, phoneNumber, password }; // Dữ liệu đăng ký
     console.log(data);
     try {

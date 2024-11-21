@@ -51,6 +51,8 @@ const AdminStatis = () => {
 
         setRevenueData(calcRevenueData(invoices, selectedMonth, selectedYear));
 
+        console.log(calcRevenueData(invoices, selectedMonth, selectedYear));
+
         setInvoiceData(calcInvoiceData(invoices, selectedMonth, selectedYear));
 
         setUserData(calcUserData(users, selectedMonth, selectedYear));
@@ -235,7 +237,7 @@ function calcRevenueData(orders, month, year) {
     filteredOrders.forEach((o) => {
         const orderDay = new Date(o.createdAt).getDate() - 1;
 
-        dailyRevenue[orderDay - 1] += o.amountToPay;
+        dailyRevenue[orderDay ] += o.amountToPay;
     });
 
     // Tổng doanh thu
@@ -260,7 +262,7 @@ function calcInvoiceData(orders, month, year) {
     filteredOrders.forEach((o) => {
         const orderDay = new Date(o.createdAt).getDate() - 1;
 
-        dailyInvoice[orderDay - 1] += 1;
+        dailyInvoice[orderDay ] += 1;
     });
 
     // Tổng đơn hàng
@@ -323,7 +325,7 @@ function getTop5Product(orders, month, year) {
             quantity,
         })
     );
-    return formattedProducts.slice(0, 5);
+    return formattedProducts.slice(0, 5).sort((a,b)=> b.quantity-a.quantity);
 }
 
 export default AdminStatis;

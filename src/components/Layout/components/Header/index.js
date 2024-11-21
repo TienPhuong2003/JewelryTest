@@ -47,35 +47,6 @@ import {
 
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 
-const cx = classNames.bind(styles);
-const MENU_ITEMS = [
-  {
-    icon: <FontAwesomeIcon icon={faLanguage} />,
-    title: "English",
-    children: {
-      title: "English",
-      data: [
-        {
-          code: "en",
-          title: "English",
-        },
-        {
-          code: "vi",
-          title: "Tiếng Việt",
-        },
-      ],
-    },
-  },
-  {
-    icon: <FontAwesomeIcon icon={faCircleQuestion} />,
-    title: "Feedback and help",
-    to: "/feedback",
-  },
-  {
-    icon: <FontAwesomeIcon icon={faKeyboard} />,
-    title: "Keyboard shortcuts",
-  },
-];
 
 function Header() {
   const [cartCount, setCartCount] = useState(0);
@@ -251,7 +222,7 @@ function Header() {
               <li
                 key={item._id}
                 onMouseEnter={() => handleMouseEnter(item._id)}
-                onClick={() => handleCategoryClick(item._id)}
+                // onClick={() => handleCategoryClick(item._id)}
               >
                 {item.category_name.toUpperCase()}
                 <div className={styles.submenu}>
@@ -317,13 +288,13 @@ function Header() {
                           </ul>
                         )}
 
-                        {subcategories[item._id].some(sub => sub.category_type === 'type') && (
+                        {subcategories[item._id].some(sub => sub.category_type === 'style') && (
                           <ul className={styles.ul1}>
                             <div className={styles.li1}>
                               <li className={styles.headerli}>Hình</li>
                               <div className={styles.subcategories}>
                                 {subcategories[item._id]
-                                  .filter(sub => sub.category_type === 'type')
+                                  .filter(sub => sub.category_type === 'style')
                                   .map(sub => (
                                     <li 
                                       key={sub._id} 
@@ -341,7 +312,7 @@ function Header() {
                     )}
                     <div className={styles.imageContainer}>
                       <img
-                        src="https://bizweb.dktcdn.net/100/461/213/themes/870653/assets/mega-5-image-2.jpg?1727430576753"
+                        src="https://bizweb.dktcdn.net/100/461/213/themes/870653/assets/mega-1-image-2.jpg?1732012753391"
                         alt="ảnh quà & đồ đôi"
                       />
                     </div>

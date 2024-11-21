@@ -96,7 +96,22 @@ const AdminUserList = () => {
             product_short_description,
             product_images,
         }) => {
+            const schema = Yup.object().shape({
+                product_price: Yup.number()
+                    .positive("Giá sản phẩm phải lớn hơn 0")
+                    .required("Giá sản phẩm là bắt buộc"),
+                product_sale_price: Yup.number()
+                    .positive("Giá khuyến mãi phải lớn hơn 0")
+                    .nullable()
+                    .lessThan(Yup.ref('product_price'), "Giá khuyến mãi phải nhỏ hơn giá sản phẩm")
+                    .required("Giá khuyến mãi là bắt buộc nếu có giá trị"),
+            });
+
             try {
+                await schema.validate({
+                    product_price,
+                    product_sale_price,
+                });
                 const formData = new FormData();
                 formData.append("product_code", product_code);
                 formData.append("product_name", product_name);
@@ -146,12 +161,12 @@ const AdminUserList = () => {
                 }
             } catch (err) {
                 Swal.fire({
-                    title: "Thêm không thành công!",
+                    title: "Lỗi xác thực!",
+                    text: err.errors.join(", "),
                     icon: "error",
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
+                    showConfirmButton: true,
                 });
+                return;
             }
         },
         [API_URL, fetchData]

@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react";
 import styles from "./CartPage.module.scss";
-import cartEmptyImage from "../../icon/cart-empty.png";
+import cartEmptyImage from "../../assets/icon/cart-empty.png";
 import { Link, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb";
 import { fetchDiscounts } from "../../services/api/discountService";
 import { fetchPayment } from "../../services/api/checkoutService";
+import { Modal, notification } from "antd";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentItemId, setCurrentItemId] = useState(null);
   const navigate = useNavigate();
 
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Giỏ hàng" },
   ];
-  
+
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cartItems")) || [];
     setCartItems(items);
@@ -46,13 +49,43 @@ const CartPage = () => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   };
 
-  const handleRemoveItem = (itemId) => {
-    // Xóa item khỏi state và localStorage
+  // const handleRemoveItem = (itemId) => {
+  //   // Xóa item khỏi state và localStorage
+  //   const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa không?");
+  //   if (confirmDelete) {
+  //     setCartItems((prevItems) => {
+  //       const updatedItems = prevItems.filter((item) => item.id !== itemId);
+  //       localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+  //       alert("Xóa sản phẩm thành công"); // Thông báo thành công
+  //       return updatedItems;
+  //     });
+  //   } else {
+  //     alert("Xóa sản phẩm thất bại"); // Thông báo thất bại
+  //   }
+  // };
+
+  const showDeleteConfirm = (itemId) => {
+    setCurrentItemId(itemId);
+    setIsModalVisible(true);
+  };
+
+  const handleRemoveItem = () => {
     setCartItems((prevItems) => {
-      const updatedItems = prevItems.filter((item) => item.id !== itemId);
+      const updatedItems = prevItems.filter(
+        (item) => item.id !== currentItemId,
+      );
       localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+      notification.success({
+        message: "Thông báo",
+        description: "Xóa sản phẩm thành công",
+      });
       return updatedItems;
     });
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
   const totalAmount = cartItems.reduce((total, item) => {
@@ -73,9 +106,9 @@ const CartPage = () => {
   const handleCheckout = async () => {
     try {
       const emailtoken = localStorage.getItem("userEmail");
-      const items = cartItems.map(item => ({
+      const items = cartItems.map((item) => ({
         product_id: item?.id,
-        quantity: item.quantity
+        quantity: item.quantity,
       }));
 
       const response = await fetchPayment({ emailtoken, items, discount_id });
@@ -87,7 +120,9 @@ const CartPage = () => {
       setPaymentData(response);
       console.log("Dữ liệu thanh toán:", response);
 
-      navigate("/checkout", { state: { cartItems, emailtoken, paymentData: response } });
+      navigate("/checkout", {
+        state: { cartItems, emailtoken, paymentData: response },
+      });
     } catch (error) {
       console.error("Lỗi không mong muốn:", error);
     }
@@ -143,10 +178,17 @@ const CartPage = () => {
                         <span className={styles.material}>
                           {item.product.product_details.color}
                         </span>
-                        <a
+                        {/* <a
                           title="Xóa"
                           className={styles.btn}
                           onClick={() => handleRemoveItem(item.id)}
+                        >
+                          Xóa
+                        </a> */}
+                        <a
+                          title="Xóa"
+                          className={styles.btn}
+                          onClick={() => showDeleteConfirm(item.id)}
                         >
                           Xóa
                         </a>
@@ -191,6 +233,16 @@ const CartPage = () => {
                     </div>
                   </div>
                 ))}
+                <Modal
+                  title="Xác nhận xóa"
+                  visible={isModalVisible}
+                  onOk={handleRemoveItem}
+                  onCancel={handleCancel}
+                  okText="Xóa"
+                  cancelText="Hủy"
+                >
+                  <p>Bạn có chắc chắn muốn xóa không?</p>
+                </Modal>
                 <div className={styles.bottom}>
                   <Link to="/" className={styles.goOn}>
                     Tiếp tục mua hàng
@@ -217,7 +269,10 @@ const CartPage = () => {
             )}
           </div>
           <div className={styles.cartRight}>
-            <DiscountCard totalAmount={totalAmount} setDiscount_id={setDiscount_id} />
+            <DiscountCard
+              totalAmount={totalAmount}
+              setDiscount_id={setDiscount_id}
+            />
           </div>
         </div>
       </div>
@@ -225,7 +280,7 @@ const CartPage = () => {
   );
 };
 
-const DiscountCard = ({ totalAmount ,setDiscount_id }) => {
+const DiscountCard = ({ totalAmount, setDiscount_id }) => {
   const [showDiscounts, setShowDiscounts] = useState(false);
   const [discountData, setDiscountData] = useState([]);
 
@@ -277,22 +332,21 @@ const DiscountCard = ({ totalAmount ,setDiscount_id }) => {
           {discountData.map((discount, index) => (
             <div key={index} className={styles.discountItem}>
               <div className={styles.discountTitle}>
-                Giảm {new Intl.NumberFormat("vi-VN").format(
-                  discount.discountAmount,
-                )}
+                Giảm{" "}
+                {new Intl.NumberFormat("vi-VN").format(discount.discountAmount)}
                 {discount.discountType === "percent" ? "%" : "đ"}
               </div>
               <div className={styles.discountCodeContainer}>
                 <div className={styles.discountCode}>
-                  <input 
+                  <input
                     type="radio"
                     id={`discount-${index}`}
                     name="discount"
                     value={discount.code}
-                    style={{marginRight: '10px', marginTop: '10px'}}
+                    style={{ marginRight: "10px", marginTop: "10px" }}
                     onChange={() => setDiscount_id(discount._id)}
                   />
-                  <span style={{marginRight: '10px'}}>Top Code</span>
+                  <span style={{ marginRight: "10px" }}>Top Code</span>
                   <span>{discount.code}</span>
                   <span>{discount.name}</span>
                   <button className={styles.copyButton}>Áp dụng</button>

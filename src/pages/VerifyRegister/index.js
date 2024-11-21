@@ -4,7 +4,7 @@ import { verifyOTP } from "../../services/api/authService";
 import styles from './VerifyOTP.module.scss';
 import { Form } from 'antd';
 import InputOtpField from '../../components/form/InputOtpField';
-import OTP from '../../icon/OTP.png'
+import OTP from '../../assets/icon/OTP.png'
 
 export default function VerifyOTP() {
   const location = useLocation();

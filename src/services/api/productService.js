@@ -76,6 +76,8 @@ export const getProductbyCategory = async (categoryId, limit, page) => {
     );
 
     const data = await response.json();
+    console.log(`${API_BASE_URL}/products/category/${categoryId}?limit=${limit}&page=${page}`);
+    
     return data;
   } catch (error) {
     console.error(error);

@@ -16,17 +16,17 @@ const PasswordUser = () => {
     e.preventDefault(); // Ngăn chặn hành vi mặc định của form
     setErrorMessage("");
 
-    // //Kiểm tra độ dài mật khẩu mới
-    // if (newPassword.length < 8) {
-    //   setErrorMessage('Mật khẩu mới phải có ít nhất 8 ký tự.');
-    //   return;
-    // }
+    //Kiểm tra độ dài mật khẩu mới
+    if (newPassword.length < 8) {
+      setErrorMessage('Mật khẩu mới phải có ít nhất 8 ký tự.');
+      return;
+    }
 
-    // // Kiểm tra xem mật khẩu xác nhận có khớp không
-    // if (newPassword !== confirmPassword) {
-    //   setErrorMessage('Mật khẩu xác nhận không khớp.');
-    //   return;
-    // }
+    // Kiểm tra xem mật khẩu xác nhận có khớp không
+    if (newPassword !== confirmPassword) {
+      setErrorMessage('Mật khẩu xác nhận không khớp.');
+      return;
+    }
 
     try {
       const response = await changePassword(email, oldPassword, newPassword,confirmPassword);

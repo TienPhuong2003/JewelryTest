@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { login, requestOTP, sendOTP } from "../../services/api/authService"; // Import các hàm từ service
 import styles from "./Login.module.scss"; // Import SCSS
 import Breadcrumb from '../../components/Breadcrumb';
+import { notification } from "antd";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,8 +21,12 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const { userEmail, accessToken, decodedToken ,userId} = await login(email, password); // Gọi API đăng nhập
+      const { userEmail, accessToken, decodedToken ,userId} = await login(email, password); 
       console.log("Đăng nhập thành công:", accessToken);
+      notification.success({
+        message: "Đăng nhập thành công",
+        description: "Bạn đã đăng nhập thành công",
+      });
       setEmail(userEmail);
       // localStorage.setItem("userEmail", userEmail);
       // localStorage.setItem("accessToken",accessToken);
@@ -38,7 +43,10 @@ export default function Login() {
         navigate("/login"); 
       }
     } catch (error) {
-      alert(error.message);
+      notification.error({
+        message: "Đăng nhập thất bại",
+        description: "Bạn đã nhập sai mật khẩu",
+      });
     }
   };
 
@@ -49,7 +57,10 @@ export default function Login() {
       console.log("Yêu cầu OTP thành công:", otpData);
       navigate("/reset-password");
     } catch (error) {
-      alert(error.message);
+      notification.error({
+        message: "Yêu cầu OTP thất bại",
+        description: error.message,
+      });
     }
   };
 

@@ -75,6 +75,7 @@ function ProductList() {
           data.data?.product?.totalPages || data.data?.totalPages || 1;
         setProducts(products);
         setTotalPages(totalPages);
+        
       } catch (error) {
         console.error("Lỗi fetch data:", error);
         setError("Có lỗi xảy ra khi tải sản phẩm.");
