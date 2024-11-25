@@ -1,5 +1,5 @@
 const config = {
-    API_URL: "http://localhost:3000/api/",
+    API_URL: "https://jewelry-be-s59j.onrender.com/api/",
     LIMIT: 10,
     TABLE_USER_COL: [
         {
